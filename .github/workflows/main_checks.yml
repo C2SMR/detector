@@ -7,7 +7,7 @@ on:
       -master
 
 
-job:
+jobs:
   lint-python:
     name: Run linters
     runs-on: ubuntu-latest
