@@ -37,9 +37,14 @@ class Main:
         self.cv2.imwrite(FOLDER_PICTURE + NAME_PICTURE, self.video)
 
     def predict_picture(self):
-        self.actual_data_predict_picture = self.model.predict(FOLDER_PICTURE + NAME_PICTURE, confidence=40,
-                                                              overlap=30).json()
-        self.model.predict(FOLDER_PICTURE + NAME_PICTURE, confidence=40, overlap=30).save(FOLDER_PICTURE + NAME_PICTURE)
+        self.actual_data_predict_picture = self.model.predict(FOLDER_PICTURE +
+                                                              NAME_PICTURE,
+                                                              confidence=40,
+                                                              overlap=30)\
+            .json()
+        self.model.predict(FOLDER_PICTURE + NAME_PICTURE,
+                           confidence=40,
+                           overlap=30).save(FOLDER_PICTURE + NAME_PICTURE)
 
     def run(self):
         while True:
@@ -58,7 +63,8 @@ class Main:
             self.predict_picture()
             self.api.add_picture_alert_or_moment(FOLDER_PICTURE + NAME_PICTURE)
             self.detector = Detector(self.actual_data_predict_picture)
-            self.api.set_number_people(self.detector.get_nb_beach(), self.detector.get_nb_sea())
+            self.api.set_number_people(self.detector.get_nb_beach(),
+                                       self.detector.get_nb_sea())
 
         self.video.release()
         cv2.destroyAllWindows()

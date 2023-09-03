@@ -21,4 +21,3 @@ class Detector:
         width_picture = self.data_picture["image"]["width"]
         height_picture = self.data_picture["image"]["width"]
         return int(width_sea*height_sea / width_picture*height_picture)
-
