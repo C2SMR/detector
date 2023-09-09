@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+
+  detector:
+    container_name: detector
+    build:
+      context: ./src
+    environment:
+      LONGITUDE: ${LONGITUDE}
+      LATITUDE: ${LATITUDE}
+      CITY: ${CITY}
+      TYPE_OF_VIDEO: cam
+    volumes:
+      - ./api:/python-docker
