@@ -25,13 +25,18 @@ class API:
             "city": self.city
         })
 
-    def delete_alert_by_id(self, id_alert: int):
-        requests.post(self.url + "/delete_alert_by_id", json={
+    def delete_alert_by_city(self):
+        requests.post(self.url + "/delete_alert_by_city", json={
             "key": RASPBERRY_KEY,
-            "id_alert": id_alert
+            "city": self.city
         })
 
     def add_alert(self, color: int, message: str):
+        """
+        :param color: -> 0, 1, 2
+        :param message:
+        :return:
+        """
         requests.post(self.url + "/add_alert", json={
             "key": RASPBERRY_KEY,
             "color": color,

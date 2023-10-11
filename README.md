@@ -21,3 +21,19 @@ docker compose up --build
 - Capture folder
   - chrome (for yt stream)
   - opencv (for cam)
+
+## ADD ALERT
+
+#### Go to alert.py
+##### Add your new method in run() (and update the README)
+````python
+    def run(self) -> None:
+        self.no_one()
+        self.beach_full()
+        self.have_boat()
+        self.rain()
+        self.hard_wind()
+        self.swimmer_away()
+        self.hot()
+        self.no_sea_detected()
+````

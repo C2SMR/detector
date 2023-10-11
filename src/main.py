@@ -6,11 +6,13 @@ from src.config import PROJECT_WORKSPACE_ROBOFLOW, \
     API_KEY_ROBOFLOW, FOLDER_PICTURE, NAME_PICTURE
 from src.detector import Detector
 from src.api import API
+from src.alert import Alert
 
 
 class Main:
 
     def __init__(self):
+        self.alert = None
         self.detector = None
         self.actual_data_predict_picture: object = None
         self.cv2 = None
@@ -57,3 +59,5 @@ class Main:
             self.detector = Detector(self.actual_data_predict_picture)
             self.api.set_number_people(self.detector.get_nb_beach(),
                                        self.detector.get_nb_sea())
+            self.alert = Alert(self.latitude, self.longitude, self.actual_data_predict_picture, self.api)
+            self.alert.run()
