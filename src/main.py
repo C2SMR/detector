@@ -2,11 +2,11 @@ from roboflow import Roboflow
 import time
 import sys
 
-from src.config import PROJECT_WORKSPACE_ROBOFLOW, \
+from config import PROJECT_WORKSPACE_ROBOFLOW, \
     API_KEY_ROBOFLOW, FOLDER_PICTURE, NAME_PICTURE
-from src.detector import Detector
-from src.api import API
-from src.alert import Alert
+from detector import Detector
+from api import API
+from alert import Alert
 
 
 class Main:
@@ -61,3 +61,7 @@ class Main:
                                        self.detector.get_nb_sea())
             self.alert = Alert(self.latitude, self.longitude, self.actual_data_predict_picture, self.api)
             self.alert.run()
+
+
+if __name__ == '__main__':
+    Main()

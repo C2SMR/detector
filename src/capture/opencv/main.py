@@ -1,6 +1,6 @@
 import cv2
 
-from src.config import TITLE, FOLDER_PICTURE, NAME_PICTURE
+from config import TITLE, FOLDER_PICTURE, NAME_PICTURE
 
 
 class Main:

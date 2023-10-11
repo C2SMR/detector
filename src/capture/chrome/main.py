@@ -3,7 +3,7 @@ import sys
 import time
 
 import undetected_chromedriver as webdriver
-from src.config import FOLDER_PICTURE, NAME_PICTURE
+from config import FOLDER_PICTURE, NAME_PICTURE
 
 
 def full_screen():

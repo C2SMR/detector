@@ -1,7 +1,7 @@
 import requests
 
-from src.config import RASPBERRY_KEY
-from src.weather import Weather
+from config import RASPBERRY_KEY
+from weather import Weather
 
 
 class API:

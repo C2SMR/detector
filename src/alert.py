@@ -1,5 +1,5 @@
-from src.weather import Weather
-from src.detector import Detector
+from weather import Weather
+from detector import Detector
 
 
 def distance_swimmer(swimmer: object) -> int:
