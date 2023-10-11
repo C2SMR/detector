@@ -1,11 +1,4 @@
-on:
-  pull_request:
-    branches:
-      - master
-  push:
-    branches:
-      -master
-
+on: push
 
 jobs:
   flake8-lint:
