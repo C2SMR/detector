@@ -7,6 +7,8 @@ from config import PROJECT_WORKSPACE_ROBOFLOW, \
 from detector import Detector
 from api import API
 from alert import Alert
+from capture.chrome.main import Navigation
+from capture.opencv.main import CaptureCam
 
 
 class Main:
@@ -14,6 +16,7 @@ class Main:
     def __init__(self):
         self.alert = None
         self.detector = None
+        self.sensors = None
         self.actual_data_predict_picture: object = None
         self.cv2 = None
         self.rf = Roboflow(api_key=API_KEY_ROBOFLOW)
@@ -26,6 +29,10 @@ class Main:
         self.city: str = sys.argv[3]
         self.type_of_cam: str = sys.argv[4]
         self.api = API(self.city)
+        if self.type_of_cam != "":
+            self.sensors = Navigation(self.type_of_cam)
+        else:
+            self.sensors = CaptureCam()
         self.run()
 
     def verif_time_one_hour(self) -> bool:
@@ -47,6 +54,9 @@ class Main:
     def run(self):
         while True:
 
+            # CAPTURES
+            self.sensors.run()
+
             # ACTIONS
 
             if self.verif_time_one_hour():
@@ -59,7 +69,8 @@ class Main:
             self.detector = Detector(self.actual_data_predict_picture)
             self.api.set_number_people(self.detector.get_nb_beach(),
                                        self.detector.get_nb_sea())
-            self.alert = Alert(self.latitude, self.longitude, self.actual_data_predict_picture, self.api)
+            self.alert = Alert(self.latitude, self.longitude,
+                               self.actual_data_predict_picture, self.api)
             self.alert.run()
 
 

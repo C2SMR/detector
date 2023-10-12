@@ -5,7 +5,7 @@ services:
   detector:
     container_name: detector
     build:
-      context: ./src
+      context: .
     environment:
       LONGITUDE: ${LONGITUDE}
       LATITUDE: ${LATITUDE}

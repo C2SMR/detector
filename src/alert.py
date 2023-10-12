@@ -12,7 +12,8 @@ def distance_swimmer(swimmer: object) -> int:
 
 
 class Alert:
-    def __init__(self, latitude: float, longitude: float, data_picture: object, api):
+    def __init__(self, latitude: float, longitude: float,
+                 data_picture: object, api):
         self.latitude: float = latitude
         self.longitude: float = longitude
         self.data_picture: object = data_picture

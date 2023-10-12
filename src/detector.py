@@ -22,9 +22,9 @@ class Detector:
                 height_sea = data["height"]
                 width_picture = self.data_picture["image"]["width"]
                 height_picture = self.data_picture["image"]["height"]
-                return int(width_sea * height_sea / width_picture * height_picture)
+                return int(width_sea * height_sea /
+                           width_picture * height_picture)
         return -1
 
     def get_nb_boat(self) -> int:
         return self.count_class("boat")
-
