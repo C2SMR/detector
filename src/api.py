@@ -1,19 +1,18 @@
 import requests
-
-from config import RASPBERRY_KEY
 from weather import Weather
 
 
 class API:
-    def __init__(self, city: str):
+    def __init__(self, city: str, RASPBERRY_KEY: str):
         self.url: str = "https://api.c2smr.fr/machine"
         self.city: str = city
         self.weather: object = Weather
+        self.RASPBERRY_KEY = RASPBERRY_KEY
 
     def set_flag(self, color: int):
         try:
             requests.post(self.url + "/set_flag", json={
-                "key": RASPBERRY_KEY,
+                "key": self.RASPBERRY_KEY,
                 "color": color,
                 "city": self.city
             })
@@ -23,7 +22,7 @@ class API:
 
     def set_number_people(self, nb_beach: int, nb_sea: int):
         requests.post(self.url + "/set_number_people", json={
-            "key": RASPBERRY_KEY,
+            "key": self.RASPBERRY_KEY,
             "nb_beach": nb_beach,
             "nb_sea": nb_sea,
             "city": self.city
@@ -31,7 +30,7 @@ class API:
 
     def delete_alert_by_city(self):
         requests.post(self.url + "/delete_alert_by_city", json={
-            "key": RASPBERRY_KEY,
+            "key": self.RASPBERRY_KEY,
             "city": self.city
         })
         self.add_alert(0, "Plage surveillée")
@@ -44,7 +43,7 @@ class API:
         """
         try:
             requests.post(self.url + "/add_alert", json={
-                "key": RASPBERRY_KEY,
+                "key": self.RASPBERRY_KEY,
                 "color": color,
                 "message": message,
                 "city": self.city
@@ -55,7 +54,7 @@ class API:
 
     def add_data_city(self, nb_beach: int, nb_sea: int, cam_visibility: int):
         requests.post(self.url + "/add_data_city", json={
-            "key": RASPBERRY_KEY,
+            "key": self.RASPBERRY_KEY,
             "city": self.city,
             "nb_beach": nb_beach,
             "nb_sea": nb_sea,
@@ -69,7 +68,7 @@ class API:
 
     def add_picture_alert_or_moment(self, path_file: str):
         requests.post(self.url + "/add_picture_alert_or_moment", json={
-            "key": RASPBERRY_KEY,
+            "key": self.RASPBERRY_KEY,
         }, files={
             open(path_file, 'rb')
         })

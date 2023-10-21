@@ -12,5 +12,6 @@ services:
       CITY: ${CITY}
       TYPE_OF_VIDEO: ${TYPE_OF_VIDEO}
       ROBOFLOW_VERSION : ${ROBOFLOW_VERSION}
+      RASPBERRY_KEY: ${RASPBERRY_KEY}
     volumes:
       - ./api:/python-docker

@@ -18,4 +18,4 @@ COPY src /app
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-CMD python3 main.py ${LATITUDE} ${LONGITUDE} ${CITY} ${TYPE_OF_VIDEO} ${ROBOFLOW_VERSION}
+CMD python3 main.py ${LATITUDE} ${LONGITUDE} ${CITY} ${TYPE_OF_VIDEO} ${ROBOFLOW_VERSION} $ {RASPBERRY_KEY}
