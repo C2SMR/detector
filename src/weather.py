@@ -15,6 +15,7 @@ class Weather:
                             "precipitation," \
                             "cloudcover,cloudcover_low," \
                             "windspeed_10m"
+        self.fetch_data()
 
     def fetch_data(self):
         res = requests.get(self.api_url)

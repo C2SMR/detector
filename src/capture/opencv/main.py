@@ -7,7 +7,7 @@ class CaptureCam:
         self.video = cv2.VideoCapture(0)
 
     def take_picture(self) -> None:
-        cv2.imwrite('../../pictures/picture.jpg', self.video)
+        cv2.imwrite('pictures/picture.png', self.video)
 
     def run(self) -> None:
         cv2.imshow("C2SMR", self.video.read()[1])

@@ -19,20 +19,24 @@ class Main:
         self.sensors = None
         self.actual_data_predict_picture: object = None
         self.cv2 = None
+        print(10)
         self.rf = Roboflow(api_key=API_KEY_ROBOFLOW)
         self.project = self.rf.workspace().project(PROJECT_WORKSPACE_ROBOFLOW)
-        self.model = self.project.version(2).model
+        self.model = self.project.version(int(sys.argv[5])).model
         self.one_hour: int = 60 * 60
         self.time_for_one_hour: float = time.time()
         self.latitude: float = float(sys.argv[1])
         self.longitude: float = float(sys.argv[2])
-        self.city: str = sys.argv[3]
+        self.city: str = sys.argv[3].replace('_', ' ')
         self.type_of_cam: str = sys.argv[4]
+        print(11)
         self.api = API(self.city)
+        print(12)
         if self.type_of_cam != "":
             self.sensors = Navigation(self.type_of_cam)
         else:
             self.sensors = CaptureCam()
+
         self.run()
 
     def verif_time_one_hour(self) -> bool:
@@ -55,7 +59,9 @@ class Main:
         while True:
 
             # CAPTURES
+            print(0)
             self.sensors.run()
+            print(1)
 
             # ACTIONS
 
@@ -65,13 +71,19 @@ class Main:
                                        self.detector.get_visibility()),
 
             self.predict_picture()
-            self.api.add_picture_alert_or_moment(FOLDER_PICTURE + NAME_PICTURE)
+            print(2)
             self.detector = Detector(self.actual_data_predict_picture)
+            print(3)
             self.api.set_number_people(self.detector.get_nb_beach(),
                                        self.detector.get_nb_sea())
+            print(4)
             self.alert = Alert(self.latitude, self.longitude,
                                self.actual_data_predict_picture, self.api)
+            print(5)
             self.alert.run()
+            print(6)
+            # self.api.add_picture_alert_or_moment(
+            # FOLDER_PICTURE + NAME_PICTURE)
 
 
 if __name__ == '__main__':

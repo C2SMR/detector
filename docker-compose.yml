@@ -10,6 +10,7 @@ services:
       LONGITUDE: ${LONGITUDE}
       LATITUDE: ${LATITUDE}
       CITY: ${CITY}
-      TYPE_OF_VIDEO: cam
+      TYPE_OF_VIDEO: ${TYPE_OF_VIDEO}
+      ROBOFLOW_VERSION : ${ROBOFLOW_VERSION}
     volumes:
       - ./api:/python-docker
