@@ -14,8 +14,8 @@ from capture.opencv.main import CaptureCam
 class Main:
 
     def __init__(self):
-        self.alert = None
         self.detector = None
+        self.alert = None
         self.sensors = None
         self.actual_data_predict_picture: object = None
         self.cv2 = None
@@ -28,7 +28,7 @@ class Main:
         self.longitude: float = float(sys.argv[2])
         self.city: str = sys.argv[3].replace('_', ' ')
         self.type_of_cam: str = sys.argv[4]
-        self.api = API(self.city, sys.argv[6])
+        self.api: API = API(self.city, sys.argv[6])
         if self.type_of_cam != "":
             self.sensors = Navigation(self.type_of_cam)
         else:
@@ -66,11 +66,13 @@ class Main:
                                        self.detector.get_visibility()),
 
             self.predict_picture()
-            self.detector = Detector(self.actual_data_predict_picture)
+            self.detector: Detector = Detector(
+                self.actual_data_predict_picture)
             self.api.set_number_people(self.detector.get_nb_beach(),
                                        self.detector.get_nb_sea())
-            self.alert = Alert(self.latitude, self.longitude,
-                               self.actual_data_predict_picture, self.api)
+            self.alert: Alert = Alert(self.latitude, self.longitude,
+                                      self.actual_data_predict_picture,
+                                      self.api)
             self.alert.run()
             # self.api.add_picture_alert_or_moment(
             # FOLDER_PICTURE + NAME_PICTURE)

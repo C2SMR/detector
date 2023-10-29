@@ -1,3 +1,4 @@
+from api import API
 from weather import Weather
 from detector import Detector
 
@@ -13,12 +14,12 @@ def distance_swimmer(swimmer: object) -> int:
 
 class Alert:
     def __init__(self, latitude: float, longitude: float,
-                 data_picture: object, api):
+                 data_picture: object, api: API):
         self.number_alerts = None
         self.latitude: float = latitude
         self.longitude: float = longitude
         self.data_picture: object = data_picture
-        self.api = api
+        self.api: API = api
         self.weather = Weather(self.latitude, self.longitude)
         self.detector = Detector(self.data_picture)
         self.api.delete_alert_by_city()  # delete old alert picture
