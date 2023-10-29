@@ -14,4 +14,5 @@ services:
       ROBOFLOW_VERSION : ${ROBOFLOW_VERSION}
       RASPBERRY_KEY: ${RASPBERRY_KEY}
     volumes:
+      - ./src/pictures:/app/pictures
       - ./api:/python-docker
