@@ -1,0 +1,3 @@
+opencv-python==4.8.1.78
+roboflow==1.1.7
+undetected_chromedriver==3.5.3
