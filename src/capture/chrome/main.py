@@ -16,11 +16,15 @@ class Navigation:
         self.full_screen()
 
     def accept_cookie(self):
-        self.driver.execute_script('document.cookie = "SOCS=CAESEwgDEgk1NzY3NTAwMzcaAmZyIAEaBgiAwfapBg"')
+        self.driver.execute_script(
+            'document.cookie = "SOCS=CAESEwgDEgk1NzY'
+            '3NTAwMzcaAmZyIAEaBgiAwfapBg"')
         self.driver.execute_script('document.location.reload()')
 
     def full_screen(self):
-        self.driver.execute_script("document.querySelector('.ytp-fullscreen-button').click()")
+        self.driver.execute_script(
+            "document.querySelector('.ytp-fullscreen-button')"
+            ".click()")
 
     def screen_shot(self) -> None:
         self.driver.save_screenshot('pictures/picture.png')
