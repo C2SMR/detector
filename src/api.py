@@ -3,10 +3,11 @@ from weather import Weather
 
 
 class API:
-    def __init__(self, city: str, RASPBERRY_KEY: str):
+    def __init__(self, city: str, RASPBERRY_KEY: str,
+                 latitude: float, longitude: float):
         self.url: str = "https://api.c2smr.fr/machine"
         self.city: str = city
-        self.weather: object = Weather
+        self.weather: Weather = Weather(latitude, longitude)
         self.RASPBERRY_KEY = RASPBERRY_KEY
 
     def set_flag(self, color: int):

@@ -20,8 +20,8 @@ class Alert:
         self.longitude: float = longitude
         self.data_picture: object = data_picture
         self.api: API = api
-        self.weather = Weather(self.latitude, self.longitude)
-        self.detector = Detector(self.data_picture)
+        self.weather: Weather = Weather(self.latitude, self.longitude)
+        self.detector: Detector = Detector(self.data_picture)
         self.api.delete_alert_by_city()  # delete old alert picture
         self.run()
 

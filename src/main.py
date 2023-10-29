@@ -28,7 +28,8 @@ class Main:
         self.longitude: float = float(sys.argv[2])
         self.city: str = sys.argv[3].replace('_', ' ')
         self.type_of_cam: str = sys.argv[4]
-        self.api: API = API(self.city, sys.argv[6])
+        self.api: API = API(self.city, sys.argv[6],
+                            self.latitude, self.longitude)
         if self.type_of_cam != "":
             self.sensors = Navigation(self.type_of_cam)
         else:
