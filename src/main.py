@@ -75,8 +75,8 @@ class Main:
                                       self.actual_data_predict_picture,
                                       self.api)
             self.alert.run()
-            # self.api.add_picture_alert_or_moment(
-            # FOLDER_PICTURE + NAME_PICTURE)
+            self.api.add_picture_alert_or_moment(
+            FOLDER_PICTURE + NAME_PICTURE)
 
 
 if __name__ == '__main__':
