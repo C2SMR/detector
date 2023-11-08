@@ -71,5 +71,5 @@ class API:
         requests.post(self.url + "/add_picture_alert_or_moment", json={
             "key": self.RASPBERRY_KEY,
         }, files={
-            open(path_file, 'rb')
+            'file': open(path_file, 'rb')
         })
