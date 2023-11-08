@@ -76,7 +76,7 @@ class Main:
                                       self.api)
             self.alert.run()
             self.api.add_picture_alert_or_moment(
-            FOLDER_PICTURE + NAME_PICTURE)
+                FOLDER_PICTURE + NAME_PICTURE)
 
 
 if __name__ == '__main__':
