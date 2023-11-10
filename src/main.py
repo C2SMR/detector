@@ -28,6 +28,11 @@ class Main:
         self.longitude: float = float(sys.argv[2])
         self.city: str = sys.argv[3].replace('_', ' ')
         self.type_of_cam: str = sys.argv[4]
+        self.OTHER_PROJECT_ROBOFLOW: list = [
+            Roboflow(api_key="rBzJE5DXKnwjcrNDnOxw").workspace()
+            .project("drowning-detection-oxcyt")
+            .version(1).model
+        ]
         self.api: API = API(self.city, sys.argv[6],
                             self.latitude, self.longitude)
         if self.type_of_cam != "":
@@ -52,6 +57,20 @@ class Main:
         self.model.predict(FOLDER_PICTURE + NAME_PICTURE,
                            confidence=40,
                            overlap=30).save(FOLDER_PICTURE + NAME_PICTURE)
+
+        for project in self.OTHER_PROJECT_ROBOFLOW:
+            prediction = project.predict(FOLDER_PICTURE +
+                                         self.city + '.png',
+                                         confidence=40,
+                                         overlap=30).json()
+            for pred in prediction['predictions']:
+                self.actual_data_predict_picture['predictions'].append(pred)
+
+            project.predict(FOLDER_PICTURE +
+                            self.city + '.png',
+                            confidence=40,
+                            overlap=30).save(FOLDER_PICTURE +
+                                             self.city + '.png')
 
     def run(self):
         while True:

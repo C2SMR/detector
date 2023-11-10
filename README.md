@@ -22,7 +22,13 @@ docker compose up --build
   - chrome (for yt stream)
   - opencv (for cam)
 
-## ADD ALERT
+## DEV
+
+---
+
+### ADD ALERT
+
+---
 
 #### Go to alert.py
 ##### Add your new method in run() (and update the README)
@@ -37,3 +43,19 @@ docker compose up --build
         self.hot()
         self.no_sea_detected()
 ````
+
+---
+
+### Add roboflow Project
+
+---
+
+- in main.py constructor
+```python
+    self.OTHER_PROJECT_ROBOFLOW: list = [
+            Roboflow(api_key="key").workspace()
+            .project("project_name")
+            .version(project_version).model
+        ]
+
+```
