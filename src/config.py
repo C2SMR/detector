@@ -1,5 +1,3 @@
-API_KEY_ROBOFLOW = "rBzJE5DXKnwjcrNDnOxw"
 PROJECT_WORKSPACE_ROBOFLOW = "c2smr"
 TITLE = "C2SMR"
-FOLDER_PICTURE = "pictures/"
-NAME_PICTURE = "picture.png"
+FOLDER_PICTURE = "picture/"
