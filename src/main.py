@@ -3,42 +3,34 @@ import time
 import sys
 
 from config import PROJECT_WORKSPACE_ROBOFLOW, \
-    API_KEY_ROBOFLOW, FOLDER_PICTURE, NAME_PICTURE
+    FOLDER_PICTURE
 from detector import Detector
 from api import API
 from alert import Alert
-from capture.chrome.main import Navigation
-from capture.opencv.main import CaptureCam
+from city import CITY
 
 
 class Main:
 
     def __init__(self):
+        self.api = None
+        self.latitude = None
+        self.longitude = None
+        self.city = None
         self.detector = None
         self.alert = None
-        self.sensors = None
-        self.actual_data_predict_picture: object = None
-        self.cv2 = None
-        self.rf = Roboflow(api_key=API_KEY_ROBOFLOW)
+        self.actual_data_predict_picture = None
+        self.api_key: str = sys.argv[2]
+        self.rf: Roboflow = Roboflow(api_key="rBzJE5DXKnwjcrNDnOxw")
         self.project = self.rf.workspace().project(PROJECT_WORKSPACE_ROBOFLOW)
-        self.model = self.project.version(int(sys.argv[5])).model
+        self.model = self.project.version(int(sys.argv[1])).model
         self.one_hour: int = 60 * 60
         self.time_for_one_hour: float = time.time()
-        self.latitude: float = float(sys.argv[1])
-        self.longitude: float = float(sys.argv[2])
-        self.city: str = sys.argv[3].replace('_', ' ')
-        self.type_of_cam: str = sys.argv[4]
         self.OTHER_PROJECT_ROBOFLOW: list = [
             Roboflow(api_key="rBzJE5DXKnwjcrNDnOxw").workspace()
             .project("drowning-detection-oxcyt")
             .version(1).model
         ]
-        self.api: API = API(self.city, sys.argv[6],
-                            self.latitude, self.longitude)
-        if self.type_of_cam != "":
-            self.sensors = Navigation(self.type_of_cam)
-        else:
-            self.sensors = CaptureCam()
 
         self.run()
 
@@ -50,13 +42,15 @@ class Main:
 
     def predict_picture(self):
         self.actual_data_predict_picture = self.model.predict(FOLDER_PICTURE +
-                                                              NAME_PICTURE,
+                                                              self.city
+                                                              + '.png',
                                                               confidence=40,
                                                               overlap=30) \
             .json()
-        self.model.predict(FOLDER_PICTURE + NAME_PICTURE,
+        self.model.predict(FOLDER_PICTURE + self.city + '.png',
                            confidence=40,
-                           overlap=30).save(FOLDER_PICTURE + NAME_PICTURE)
+                           overlap=30).save(FOLDER_PICTURE + self.city
+                                            + '.png')
 
         for project in self.OTHER_PROJECT_ROBOFLOW:
             prediction = project.predict(FOLDER_PICTURE +
@@ -72,30 +66,42 @@ class Main:
                             overlap=30).save(FOLDER_PICTURE +
                                              self.city + '.png')
 
+    def set_value_for_city(self, index):
+        self.city: str = CITY[index][0]
+        self.latitude: float = CITY[index][1]
+        self.longitude: float = CITY[index][2]
+
     def run(self):
         while True:
 
-            # CAPTURES
-            self.sensors.run()
+            for i in range(len(CITY)):
+                self.set_value_for_city(i)
+                self.api: API = API(self.city, self.api_key,
+                                    self.latitude, self.longitude)
+                self.api.get_picture()
+                self.predict_picture()
+                self.detector: Detector = Detector(
+                    self.actual_data_predict_picture)
 
-            # ACTIONS
+                self.api.set_number_people(self.detector.get_nb_beach(),
+                                           self.detector.get_nb_sea())
+                self.alert: Alert = Alert(self.latitude, self.longitude,
+                                          self.actual_data_predict_picture,
+                                          self.api)
+                self.alert.run()
 
-            if self.verif_time_one_hour():
-                self.api.add_data_city(self.detector.get_nb_beach(),
-                                       self.detector.get_nb_sea(),
-                                       self.detector.get_visibility()),
+                if self.verif_time_one_hour():
+                    for j in range(len(CITY)):
+                        self.set_value_for_city(j)
 
-            self.predict_picture()
-            self.detector: Detector = Detector(
-                self.actual_data_predict_picture)
-            self.api.set_number_people(self.detector.get_nb_beach(),
-                                       self.detector.get_nb_sea())
-            self.alert: Alert = Alert(self.latitude, self.longitude,
-                                      self.actual_data_predict_picture,
-                                      self.api)
-            self.alert.run()
-            self.api.add_picture_alert_or_moment(
-                FOLDER_PICTURE + NAME_PICTURE)
+                        self.api: API = API(self.city, self.api_key,
+                                            self.latitude, self.longitude)
+                        self.api.add_data_city(self.detector.get_nb_beach(),
+                                               self.detector.get_nb_sea(),
+                                               self.detector.get_visibility()),
+                    self.set_value_for_city(i)
+                self.api.add_picture_alert_or_moment(
+                    FOLDER_PICTURE + self.city + '.png')
 
 
 if __name__ == '__main__':

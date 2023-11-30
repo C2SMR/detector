@@ -1,4 +1,5 @@
 import requests
+import base64
 from weather import Weather
 
 
@@ -73,3 +74,14 @@ class API:
         }, files={
             'file': open(path_file, 'rb')
         })
+
+    def get_picture(self):
+        picture_base_64 = requests.post("https://api.c2smr.fr/"
+                                        "client/get_picture", json={
+                                            "city": self.city+'-not-trained'
+                                                              '.png'
+                                        })
+        picture_base_64 = picture_base_64.json()['picture']
+        imgdata = base64.b64decode(picture_base_64)
+        with open('picture/' + self.city + '.png', "wb") as f:
+            f.write(imgdata)
