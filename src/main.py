@@ -8,11 +8,15 @@ from detector import Detector
 from api import API
 from alert import Alert
 from city import CITY
+from scraper import Scraper
 
 
 class Main:
 
     def __init__(self):
+        self.password = None
+        self.user_name = None
+        self.ip = None
         self.api = None
         self.latitude = None
         self.longitude = None
@@ -70,6 +74,9 @@ class Main:
         self.city: str = CITY[index][0]
         self.latitude: float = CITY[index][1]
         self.longitude: float = CITY[index][2]
+        self.ip: str = CITY[index][3]
+        self.user_name: str = CITY[index][4]
+        self.password: str = CITY[index][5]
 
     def run(self):
         while True:
@@ -78,7 +85,8 @@ class Main:
                 self.set_value_for_city(i)
                 self.api: API = API(self.city, self.api_key,
                                     self.latitude, self.longitude)
-                self.api.get_picture()
+                (Scraper(self.city, self.ip, self.user_name, self.password)
+                 .get_picture())
                 self.predict_picture()
                 self.detector: Detector = Detector(
                     self.actual_data_predict_picture)
