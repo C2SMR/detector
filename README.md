@@ -69,6 +69,6 @@ docker compose up --build
 - in city.py
 ````python
 CITY: list[list[str | float]] = [
-    ["Villers-sur-mer", 49.3247, 0.0014]
+    ["Villers-sur-mer", 49.3247, 0.0014,'ipadress:port','user_cam','password_cam']
 ]
 ````
