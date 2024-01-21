@@ -8,7 +8,7 @@ from config import PROJECT_WORKSPACE_ROBOFLOW, \
 from detector import Detector
 from api import API
 from alert import Alert
-from city import CITY
+from city import City
 from scraper import Scraper
 
 
@@ -41,6 +41,7 @@ class Main:
             user=sys.argv[4],
             password=sys.argv[5],
         )
+        self.CITY: list[list[str | float]] = City(self.mydb).return_city()
 
         self.run()
 
@@ -77,17 +78,17 @@ class Main:
                                              self.city + '.png')
 
     def set_value_for_city(self, index):
-        self.city: str = CITY[index][0]
-        self.latitude: float = CITY[index][1]
-        self.longitude: float = CITY[index][2]
-        self.ip: str = CITY[index][3]
-        self.user_name: str = CITY[index][4]
-        self.password: str = CITY[index][5]
+        self.city: str = self.CITY[index][0]
+        self.latitude: float = self.CITY[index][1]
+        self.longitude: float = self.CITY[index][2]
+        self.ip: str = self.CITY[index][3]
+        self.user_name: str = self.CITY[index][4]
+        self.password: str = self.CITY[index][5]
 
     def run(self):
         while True:
 
-            for i in range(len(CITY)):
+            for i in range(len(self.CITY)):
                 self.set_value_for_city(i)
                 self.api: API = API(self.city, self.api_key,
                                     self.latitude, self.longitude)
@@ -105,7 +106,7 @@ class Main:
                 self.alert.run()
 
                 if self.verif_time_one_hour():
-                    for j in range(len(CITY)):
+                    for j in range(len(self.CITY)):
                         self.set_value_for_city(j)
 
                         self.api: API = API(self.city, self.api_key,

@@ -1,5 +1,5 @@
 from api import API
-from src.zone import Zone
+from zone import Zone
 from weather import Weather
 from detector import Detector
 
