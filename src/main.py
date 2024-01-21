@@ -1,6 +1,7 @@
 from roboflow import Roboflow
 import time
 import sys
+import mysql.connector
 
 from config import PROJECT_WORKSPACE_ROBOFLOW, \
     FOLDER_PICTURE
@@ -35,6 +36,11 @@ class Main:
             .project("drowning-detection-oxcyt")
             .version(1).model
         ]
+        self.mydb = mysql.connector.connect(
+            host=sys.argv[3],
+            user=sys.argv[4],
+            password=sys.argv[5],
+        )
 
         self.run()
 
@@ -95,7 +101,7 @@ class Main:
                                            self.detector.get_nb_sea())
                 self.alert: Alert = Alert(self.latitude, self.longitude,
                                           self.actual_data_predict_picture,
-                                          self.api)
+                                          self.api, self.city, self.mydb)
                 self.alert.run()
 
                 if self.verif_time_one_hour():
