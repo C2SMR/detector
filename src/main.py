@@ -40,6 +40,8 @@ class Main:
             host=sys.argv[3],
             user=sys.argv[4],
             password=sys.argv[5],
+            port=sys.argv[6],
+            database='C2SMR'
         )
         self.CITY: list[list[str | float]] = City(self.mydb).return_city()
 
