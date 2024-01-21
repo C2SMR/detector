@@ -1,0 +1,8 @@
+version: '3.8'
+
+services:
+
+  test:
+    container_name: detector.py-test
+    build:
+      context: test

@@ -4,12 +4,17 @@ from weather import Weather
 
 
 class API:
-    def __init__(self, city: str, RASPBERRY_KEY: str,
+    url: str
+    city: str
+    weather: Weather
+    RASPBERRY_KEY: str
+
+    def __init__(self, city: str, ras_key: str,
                  latitude: float, longitude: float):
-        self.url: str = "https://api.c2smr.fr/machine"
-        self.city: str = city
-        self.weather: Weather = Weather(latitude, longitude)
-        self.RASPBERRY_KEY = RASPBERRY_KEY
+        self.url = "https://api.c2smr.fr/machine"
+        self.city = city
+        self.weather = Weather(latitude, longitude)
+        self.RASPBERRY_KEY = ras_key
 
     def set_flag(self, color: int):
         try:
@@ -19,8 +24,8 @@ class API:
                 "city": self.city
             })
             print("change flag :)")
-        except Exception:
-            print(Exception)
+        except Exception as e:
+            print(e)
 
     def set_number_people(self, nb_beach: int, nb_sea: int):
         requests.post(self.url + "/set_number_people", json={
@@ -51,8 +56,8 @@ class API:
                 "city": self.city
             })
             print("alert send :)")
-        except Exception:
-            print(f"error : {Exception}")
+        except Exception as e:
+            print(f"error : {e}")
 
     def add_data_city(self, nb_beach: int, nb_sea: int, cam_visibility: int):
         requests.post(self.url + "/add_data_city", json={
@@ -77,9 +82,11 @@ class API:
 
     def get_picture(self):
         picture_base_64 = requests.post("https://api.c2smr.fr/"
-                                        "client/get_picture", json={
-                                            "city": self.city+'-not-trained'
-                                                              '.png'
+                                        "client/get_picture",
+                                        json={
+                                            "city": self.city +
+                                            '-not-trained'
+                                            '.png'
                                         })
         picture_base_64 = picture_base_64.json()['picture']
         imgdata = base64.b64decode(picture_base_64)

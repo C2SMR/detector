@@ -3,7 +3,7 @@ version: '3.8'
 services:
 
   detector:
-    container_name: detector
+    container_name: detector.py
     build:
       context: .
     environment:
