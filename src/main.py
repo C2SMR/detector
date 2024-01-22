@@ -33,7 +33,7 @@ class Main:
         self.time_for_one_hour: float = time.time()
         self.OTHER_PROJECT_ROBOFLOW: list = [
             Roboflow(api_key="rBzJE5DXKnwjcrNDnOxw").workspace()
-            .project("drowning-detection-oxcyt")
+            .project("unreal-vessels-detection")
             .version(1).model
         ]
         self.mydb = mysql.connector.connect(

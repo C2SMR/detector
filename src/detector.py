@@ -27,4 +27,5 @@ class Detector:
         return -1
 
     def get_nb_boat(self) -> int:
-        return self.count_class("boat")
+        return self.count_class("boat") + self.count_class("fishing_boat") + \
+            self.count_class("small_speedboat") + self.count_class("yatch")

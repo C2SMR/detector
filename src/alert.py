@@ -70,7 +70,8 @@ class Alert:
 
     def boat_is_near_to_swimmer(self) -> None:
         for data in self.data_picture["predictions"]:
-            if data["class"] == "boat":
+            if data["class"] in ["boat", "fishing_boat",
+                                 "small_speedboat", "yatch"]:
                 for data_swimmer in self.data_picture["predictions"]:
                     if data_swimmer["class"] == "person_in_water":
                         if abs(data["x"] - data_swimmer["x"]) < 50 and \
