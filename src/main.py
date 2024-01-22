@@ -1,13 +1,14 @@
 from roboflow import Roboflow
 import time
 import sys
+import mysql.connector
 
 from config import PROJECT_WORKSPACE_ROBOFLOW, \
     FOLDER_PICTURE
 from detector import Detector
 from api import API
 from alert import Alert
-from city import CITY
+from city import City
 from scraper import Scraper
 
 
@@ -32,9 +33,17 @@ class Main:
         self.time_for_one_hour: float = time.time()
         self.OTHER_PROJECT_ROBOFLOW: list = [
             Roboflow(api_key="rBzJE5DXKnwjcrNDnOxw").workspace()
-            .project("drowning-detection-oxcyt")
+            .project("unreal-vessels-detection")
             .version(1).model
         ]
+        self.mydb = mysql.connector.connect(
+            host=sys.argv[3],
+            user=sys.argv[4],
+            password=sys.argv[5],
+            port=sys.argv[6],
+            database='C2SMR'
+        )
+        self.CITY: list[list[str | float]] = City(self.mydb).return_city()
 
         self.run()
 
@@ -71,17 +80,17 @@ class Main:
                                              self.city + '.png')
 
     def set_value_for_city(self, index):
-        self.city: str = CITY[index][0]
-        self.latitude: float = CITY[index][1]
-        self.longitude: float = CITY[index][2]
-        self.ip: str = CITY[index][3]
-        self.user_name: str = CITY[index][4]
-        self.password: str = CITY[index][5]
+        self.city: str = self.CITY[index][0]
+        self.latitude: float = self.CITY[index][1]
+        self.longitude: float = self.CITY[index][2]
+        self.ip: str = self.CITY[index][3]
+        self.user_name: str = self.CITY[index][4]
+        self.password: str = self.CITY[index][5]
 
     def run(self):
         while True:
 
-            for i in range(len(CITY)):
+            for i in range(len(self.CITY)):
                 self.set_value_for_city(i)
                 self.api: API = API(self.city, self.api_key,
                                     self.latitude, self.longitude)
@@ -95,11 +104,11 @@ class Main:
                                            self.detector.get_nb_sea())
                 self.alert: Alert = Alert(self.latitude, self.longitude,
                                           self.actual_data_predict_picture,
-                                          self.api)
+                                          self.api, self.city, self.mydb)
                 self.alert.run()
 
                 if self.verif_time_one_hour():
-                    for j in range(len(CITY)):
+                    for j in range(len(self.CITY)):
                         self.set_value_for_city(j)
 
                         self.api: API = API(self.city, self.api_key,

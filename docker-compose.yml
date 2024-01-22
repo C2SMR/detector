@@ -3,12 +3,16 @@ version: '3.8'
 services:
 
   detector:
-    container_name: detector
+    container_name: detector.py
     build:
       context: .
     environment:
-      ROBOFLOW_VERSION : ${ROBOFLOW_VERSION}
+      ROBOFLOW_VERSION: ${ROBOFLOW_VERSION}
       RASPBERRY_KEY: ${RASPBERRY_KEY}
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_PORT: ${MYSQL_PORT}
     volumes:
       - ./src/picture:/app/picture
       - ./api:/python-docker
