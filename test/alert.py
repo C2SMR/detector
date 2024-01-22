@@ -101,7 +101,7 @@ class Alert:
                                 sea_dimensions[1] + sea_dimensions[3]):
                             self.number_alerts += 1
                             print("swimmer in danger zone if sea is not "
-                                  "detected")
+                                  "completely detected")
 
     def swimmer_in_long_zone(self) -> None:
         danger_zone: list[list[int]] = zoneGreen
