@@ -4,8 +4,7 @@ services:
 
   detector:
     container_name: detector.py
-    build:
-      context: .
+    image: ${DOCKERHUB_USERNAME}/detector:latest
     environment:
       ROBOFLOW_VERSION: ${ROBOFLOW_VERSION}
       RASPBERRY_KEY: ${RASPBERRY_KEY}
@@ -15,5 +14,5 @@ services:
       MYSQL_PORT: ${MYSQL_PORT}
       DETECOTR_ID: ${DETECTOR_ID}
     volumes:
-      - ./src/picture:/app/picture
+      - ./picture:/app/picture
       - ./api:/python-docker

@@ -2,13 +2,27 @@ import cv2
 
 
 class Scraper:
-    def __init__(self, city: str, ip: str, user_name: str, password: str):
-        self.video = None
-        self.city: str = city
-        self.ip: str = ip
-        self.user_name: str = user_name
-        self.password: str = password
-        self.folder_picture: str = 'picture/'
+    video: cv2.VideoCapture
+    city: str
+    ip: str
+    user_name: str
+    password: str
+    folder_picture: str
+    run_blur: bool
+
+    def __init__(self,
+                 city: str,
+                 ip: str,
+                 user_name: str,
+                 password: str,
+                 run_blur: bool):
+
+        self.city = city
+        self.ip = ip
+        self.user_name = user_name
+        self.password = password
+        self.folder_picture = 'picture/'
+        self.run_blur = run_blur
 
     def get_picture(self):
         self.video = cv2.VideoCapture(f'rtsp://{self.user_name}:'
@@ -17,7 +31,10 @@ class Scraper:
         _, frame = self.video.read()
 
         cv2.imwrite(f'{self.folder_picture}/{self.city}.png', frame)
-        self.apply_blur_on_picture()  # can be commented
+        if self.run_blur:
+            self.apply_blur_on_picture()
+        else:
+            print('blur enable')
 
     def apply_blur_on_picture(self):
         img = cv2.imread(f'{self.folder_picture}/{self.city}.png')
@@ -27,3 +44,4 @@ class Scraper:
         for (x, y, w, h) in faces:
             img[y:y + h, x:x + w] = cv2.blur(img[y:y + h, x:x + w], (23, 23))
         cv2.imwrite(f'{self.folder_picture}/{self.city}.png', img)
+        print('blur apply')

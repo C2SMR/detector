@@ -4,17 +4,22 @@ from datetime import datetime
 
 
 class Weather:
+    latitude: float
+    longitude: float
+    data: object
+    api_url: str
+
     def __init__(self, latitude: float, longitude: float):
-        self.latitude: float = latitude
-        self.longitude: float = longitude
-        self.data: object = {}
-        self.api_url: str = "https://api.open-meteo.com/v1/meteofrance?" \
-                            "latitude=" + str(self.latitude) + \
-                            "&longitude=" + str(self.longitude) + \
-                            "&hourly=temperature_2m," \
-                            "precipitation," \
-                            "cloudcover,cloudcover_low," \
-                            "windspeed_10m"
+        self.latitude = latitude
+        self.longitude = longitude
+        self.data = {}
+        self.api_url = "https://api.open-meteo.com/v1/meteofrance?" \
+                       "latitude=" + str(self.latitude) + \
+                       "&longitude=" + str(self.longitude) + \
+                       "&hourly=temperature_2m," \
+                       "precipitation," \
+                       "cloudcover,cloudcover_low," \
+                       "windspeed_10m"
         self.fetch_data()
 
     def fetch_data(self):
