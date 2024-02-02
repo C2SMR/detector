@@ -1,6 +1,8 @@
 class Detector:
+    data_picture: object
+
     def __init__(self, data_picture: object):
-        self.data_picture: object = data_picture
+        self.data_picture = data_picture
 
     def count_class(self, name_class: str) -> int:
         count: int = 0

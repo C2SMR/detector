@@ -55,7 +55,7 @@ class API:
                 "message": message,
                 "city": self.city
             })
-            print("alert send :)")
+            print(f'send alert type {color} : {message}')
         except Exception as e:
             print(f"error : {e}")
 
