@@ -1,4 +1,9 @@
+import mysql.connector
+
+
 class Zone:
+    city: str
+    mydb: mysql.connector.connection.MySQLConnection
 
     def __init__(self, city: str, mydb):
         self.city: str = city

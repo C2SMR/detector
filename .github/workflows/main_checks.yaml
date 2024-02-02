@@ -1,3 +1,4 @@
+name : test_action
 on: [ push, pull_request ]
 
 jobs:
@@ -37,3 +38,4 @@ jobs:
           down-flags: "--volumes"
           services: |
             detector
+            
