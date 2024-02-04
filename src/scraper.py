@@ -25,9 +25,11 @@ class Scraper:
         self.run_blur = run_blur
 
     def get_picture(self):
-        self.video = cv2.VideoCapture(f'rtsp://{self.user_name}:'
-                                      f'{self.password}@{self.ip}'
-                                      f'/h264Preview_01_sub')
+        url = (f'rtsp://{self.user_name}:'
+               f'{self.password}@{self.ip}'
+               f'/h264Preview_01_sub')
+        self.video = cv2.VideoCapture(url)
+
         _, frame = self.video.read()
 
         cv2.imwrite(f'{self.folder_picture}/{self.city}.png', frame)
