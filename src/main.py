@@ -99,6 +99,7 @@ class Main:
                                              self.city + '.png')
 
     def set_value_for_city(self, index):
+        self.CITY = City(self.mydb, self.detector_id).return_city()
         self.city = self.CITY[index][0]
         self.latitude = self.CITY[index][1]
         self.longitude = self.CITY[index][2]
