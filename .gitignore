@@ -2,3 +2,6 @@
 src/picture
 *png
 *jpg
+train/runs
+train/C2SMR*
+*.pt
