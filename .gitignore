@@ -5,3 +5,4 @@ src/picture
 train/runs
 train/C2SMR*
 *.pt
+src/*.pt
