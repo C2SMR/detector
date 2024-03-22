@@ -72,3 +72,17 @@ CITY: list[list[str | float]] = [
     ["Villers-sur-mer", 49.3247, 0.0014,'ipadress:port','user_cam','password_cam']
 ]
 ````
+
+## Train
+
+---
+
+```bash
+cd train
+py train.py api-key project-workspace project-name project-version nb-epoch nb-run
+example : py train.py rBzJE5DXKnwjcrNDnOxw c2smr c2smr-villers 2 100 2
+```
+
+- if you are an error with the train step, rename data.yaml in your dataset to yolov8-obb.yaml
+- if you are an error with the test, verify the path of train folder (the number)
+- Get your best.pt

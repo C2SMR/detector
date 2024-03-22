@@ -1,10 +1,9 @@
-from roboflow import Roboflow
 import time
 import sys
 import mysql.connector
+from ultralytics import YOLO
 
-from config import PROJECT_WORKSPACE_ROBOFLOW, \
-    FOLDER_PICTURE
+from config import FOLDER_PICTURE
 from detector import Detector
 from api import API
 from alert import Alert
@@ -22,16 +21,13 @@ class Main:
     latitude: float
     longitude: float
     city: str
+    detector: Detector
     CITY: list[tuple[float |
                      int | Decimal | str | bytes | date |
                      timedelta | datetime | set[str] | bool |
                      None, ...]]
-    detector: Detector
     alert: Alert
     actual_data_predict_picture: object
-    api_key: str
-    rf: Roboflow
-    project: object
     one_hour: int
     time_for_one_hour: float
     OTHER_PROJECT_ROBOFLOW: list
@@ -40,21 +36,13 @@ class Main:
     run_detection: bool
     run_blur: bool
     detector_id: int
+    api_key: str
 
     def __init__(self):
         self.actual_data_predict_picture = None
-        self.api_key: str = sys.argv[2]
-        self.rf = Roboflow(api_key="rBzJE5DXKnwjcrNDnOxw")
-        self.project = self.rf.workspace().project(PROJECT_WORKSPACE_ROBOFLOW)
-        self.model = self.project.version(int(sys.argv[1])).model
         self.one_hour = 60 * 60
         self.time_for_one_hour = time.time()
         self.detector_id = int(sys.argv[7])
-        self.OTHER_PROJECT_ROBOFLOW = [
-            Roboflow(api_key="rBzJE5DXKnwjcrNDnOxw").workspace()
-            .project("unreal-vessels-detection")
-            .version(1).model
-        ]
         self.mydb = mysql.connector.connect(
             host=sys.argv[3],
             user=sys.argv[4],
@@ -63,7 +51,7 @@ class Main:
             database='C2SMR'
         )
         self.CITY = City(self.mydb, self.detector_id).return_city()
-
+        self.model = YOLO("weight.pt")
         self.run()
 
     def verif_time_one_hour(self) -> bool:
@@ -73,30 +61,16 @@ class Main:
         return False
 
     def predict_picture(self):
-        self.actual_data_predict_picture = self.model.predict(FOLDER_PICTURE +
-                                                              self.city
-                                                              + '.png',
-                                                              confidence=40,
-                                                              overlap=30) \
+        self.actual_data_predict_picture = self.model(FOLDER_PICTURE +
+                                                      self.city
+                                                      + '.png',
+                                                      confidence=40,
+                                                      overlap=30) \
             .json()
-        self.model.predict(FOLDER_PICTURE + self.city + '.png',
-                           confidence=40,
-                           overlap=30).save(FOLDER_PICTURE + self.city
-                                            + '.png')
-
-        for project in self.OTHER_PROJECT_ROBOFLOW:
-            prediction = project.predict(FOLDER_PICTURE +
-                                         self.city + '.png',
-                                         confidence=40,
-                                         overlap=30).json()
-            for pred in prediction['predictions']:
-                self.actual_data_predict_picture['predictions'].append(pred)
-
-            project.predict(FOLDER_PICTURE +
-                            self.city + '.png',
-                            confidence=40,
-                            overlap=30).save(FOLDER_PICTURE +
-                                             self.city + '.png')
+        self.model(FOLDER_PICTURE + self.city + '.png',
+                   confidence=40,
+                   overlap=30).save(FOLDER_PICTURE + self.city
+                                    + '.png')
 
     def set_value_for_city(self, index):
         self.CITY = City(self.mydb, self.detector_id).return_city()
