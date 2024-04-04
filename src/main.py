@@ -11,6 +11,7 @@ from city import City
 from scraper import Scraper
 from decimal import Decimal
 from datetime import date, timedelta, datetime
+import json
 
 
 class Main:
@@ -63,14 +64,11 @@ class Main:
     def predict_picture(self):
         self.actual_data_predict_picture = self.model(FOLDER_PICTURE +
                                                       self.city
-                                                      + '.png',
-                                                      confidence=40,
-                                                      overlap=30) \
-            .json()
-        self.model(FOLDER_PICTURE + self.city + '.png',
-                   confidence=40,
-                   overlap=30).save(FOLDER_PICTURE + self.city
-                                    + '.png')
+                                                      + '.png')
+
+        for r in self.actual_data_predict_picture:
+            r.save(FOLDER_PICTURE + self.city + '.png')
+            self.actual_data_predict_picture = json.loads(r.tojson())
 
     def set_value_for_city(self, index):
         self.CITY = City(self.mydb, self.detector_id).return_city()
