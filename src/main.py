@@ -28,7 +28,7 @@ class Main:
                      timedelta | datetime | set[str] | bool |
                      None, ...]]
     alert: Alert
-    actual_data_predict_picture: object
+    actual_data_predict_picture: any
     one_hour: int
     time_for_one_hour: float
     OTHER_PROJECT_ROBOFLOW: list
@@ -38,6 +38,8 @@ class Main:
     run_blur: bool
     detector_id: int
     api_key: str
+    launch_detection: str | None
+    stop_detection: str | None
 
     def __init__(self):
         self.actual_data_predict_picture = None
@@ -80,6 +82,8 @@ class Main:
         self.password = self.CITY[index][5]
         self.run_detection = self.CITY[index][7]
         self.run_blur = self.CITY[index][6]
+        self.launch_detection = self.CITY[index][8]
+        self.stop_detection = self.CITY[index][9]
 
     def run(self):
         while True:
@@ -89,6 +93,16 @@ class Main:
                 self.set_value_for_city(i)
 
                 if self.run_detection:
+                    if self.launch_detection is not None:
+                        temp_launch = datetime.strptime(self.launch_detection,
+                                                        '%H:%M:%S')
+                        temp_stop = datetime.strptime(self.stop_detection,
+                                                      '%H:%M:%S')
+                        if not (temp_launch.time()
+                                < datetime.now().time()
+                                < temp_stop.time()):
+                            print(f'City: {self.city} pass')
+                            continue
                     self.api: API = API(self.city,
                                         self.api_key,
                                         self.latitude,

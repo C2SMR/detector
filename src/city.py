@@ -24,7 +24,10 @@ class City:
                        'password_ip,'
                        'blur,'
                        'run_detection,'
-                       'type_detection from CITY '
+                       'type_detection '
+                       'launch_detection,'
+                       'stop_detection,'
+                       'from CITY '
                        'where detector_id = %s', (self.detector_id,))
         result = cursor.fetchall()
         cursor.close()
