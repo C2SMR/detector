@@ -42,6 +42,7 @@ class Main:
     stop_detection: str | None
 
     def __init__(self):
+        self.api_key = sys.argv[2]
         self.actual_data_predict_picture = None
         self.one_hour = 60 * 60
         self.time_for_one_hour = time.time()
@@ -69,8 +70,9 @@ class Main:
                                                       + '.png')
 
         for r in self.actual_data_predict_picture:
-            r.save(FOLDER_PICTURE + self.city + '.png')
-            self.actual_data_predict_picture = json.loads(r.tojson())
+            if r is not None:
+                r.save(FOLDER_PICTURE + self.city + '.png')
+                self.actual_data_predict_picture = json.loads(r.tojson())
 
     def set_value_for_city(self, index):
         self.CITY = City(self.mydb, self.detector_id).return_city()
@@ -94,13 +96,10 @@ class Main:
 
                 if self.run_detection:
                     if self.launch_detection is not None:
-                        temp_launch = datetime.strptime(self.launch_detection,
-                                                        '%H:%M:%S')
-                        temp_stop = datetime.strptime(self.stop_detection,
-                                                      '%H:%M:%S')
-                        if not (temp_launch.time()
-                                < datetime.now().time()
-                                < temp_stop.time()):
+                        actual_hour = datetime.now().hour
+
+                        if actual_hour < int(self.launch_detection) or \
+                                actual_hour > int(self.stop_detection):
                             print(f'City: {self.city} pass')
                             continue
                     self.api: API = API(self.city,
@@ -154,7 +153,7 @@ class Main:
                     print(f'City: {self.city} has run in : '
                           f'{time.time() - self.time_start}')
                 else:
-                    print('City: {self.city} pass')
+                    print(f'City: {self.city} pass')
 
 
 if __name__ == '__main__':
