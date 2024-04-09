@@ -79,9 +79,10 @@ CITY: list[list[str | float]] = [
 
 ```bash
 cd train
-py train.py api-key project-workspace project-name project-version nb-epoch nb-run
-example : py train.py rBzJE5DXKnwjcrNDnOxw c2smr c2smr-villers 2 100 2
+py train.py api-key project-workspace project-name project-version nb-epoch size_model
+example : py train.py rBzJE5DXKnwjcrNDnOxw c2smr c2smr-villers 2 100 n
 ```
+#### --> size_model : n, s, m, l, x, ALL
 
 - if you are an error with the train step, rename data.yaml in your dataset to yolov8-obb.yaml
 - if you are an error with the test, verify the path of train folder (the number)
