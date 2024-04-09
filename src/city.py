@@ -26,8 +26,7 @@ class City:
                        'run_detection,'
                        'type_detection '
                        'launch_detection,'
-                       'stop_detection,'
-                       'from CITY '
+                       'stop_detection from CITY '
                        'where detector_id = %s', (self.detector_id,))
         result = cursor.fetchall()
         cursor.close()
