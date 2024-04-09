@@ -7,7 +7,7 @@ def main():
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 
-    model = YOLO("yolov8n.pt")
+    model = YOLO("best.pt")
 
     while True:
         ret, frame = cap.read()
