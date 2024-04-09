@@ -28,7 +28,7 @@ class Main:
                      timedelta | datetime | set[str] | bool |
                      None, ...]]
     alert: Alert
-    actual_data_predict_picture: object
+    actual_data_predict_picture: any
     one_hour: int
     time_for_one_hour: float
     OTHER_PROJECT_ROBOFLOW: list
@@ -38,8 +38,11 @@ class Main:
     run_blur: bool
     detector_id: int
     api_key: str
+    launch_detection: str | None
+    stop_detection: str | None
 
     def __init__(self):
+        self.api_key = sys.argv[2]
         self.actual_data_predict_picture = None
         self.one_hour = 60 * 60
         self.time_for_one_hour = time.time()
@@ -67,8 +70,9 @@ class Main:
                                                       + '.png')
 
         for r in self.actual_data_predict_picture:
-            r.save(FOLDER_PICTURE + self.city + '.png')
-            self.actual_data_predict_picture = json.loads(r.tojson())
+            if r is not None:
+                r.save(FOLDER_PICTURE + self.city + '.png')
+                self.actual_data_predict_picture = json.loads(r.tojson())
 
     def set_value_for_city(self, index):
         self.CITY = City(self.mydb, self.detector_id).return_city()
@@ -80,6 +84,8 @@ class Main:
         self.password = self.CITY[index][5]
         self.run_detection = self.CITY[index][7]
         self.run_blur = self.CITY[index][6]
+        self.launch_detection = self.CITY[index][8]
+        self.stop_detection = self.CITY[index][9]
 
     def run(self):
         while True:
@@ -89,6 +95,13 @@ class Main:
                 self.set_value_for_city(i)
 
                 if self.run_detection:
+                    if self.launch_detection is not None:
+                        actual_hour = datetime.now().hour
+
+                        if actual_hour < int(self.launch_detection) or \
+                                actual_hour > int(self.stop_detection):
+                            print(f'City: {self.city} pass')
+                            continue
                     self.api: API = API(self.city,
                                         self.api_key,
                                         self.latitude,
@@ -140,7 +153,7 @@ class Main:
                     print(f'City: {self.city} has run in : '
                           f'{time.time() - self.time_start}')
                 else:
-                    print('City: {self.city} pass')
+                    print(f'City: {self.city} pass')
 
 
 if __name__ == '__main__':
