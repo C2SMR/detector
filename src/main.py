@@ -65,14 +65,30 @@ class Main:
         return False
 
     def predict_picture(self):
-        self.actual_data_predict_picture = self.model(FOLDER_PICTURE +
-                                                      self.city
-                                                      + '.png')
+        self.actual_data_predict_picture = self.model(FOLDER_PICTURE + self.city + '.png')
 
+        valid_results = []
         for r in self.actual_data_predict_picture:
             if r is not None:
                 r.save(FOLDER_PICTURE + self.city + '.png')
-                self.actual_data_predict_picture = json.loads(r.tojson())
+                try:
+                    json_data = r.tojson()
+                    if json_data is not None:
+                        self.actual_data_predict_picture = json.loads(json_data)
+                        valid_results.append(r)
+                        break  # Exit loop after first valid result
+                    else:
+                        print(f"Résultat JSON vide pour l'image de {self.city}.")
+                except AttributeError as e:
+                    print(f"Erreur lors du traitement de l'image pour {self.city}: {e}")
+
+        if not valid_results:
+            print(f"Aucune détection valide pour l'image de {self.city}.")
+            self.actual_data_predict_picture = None
+
+
+
+
 
     def set_value_for_city(self, index):
         self.CITY = City(self.mydb, self.detector_id).return_city()
@@ -113,6 +129,7 @@ class Main:
                              self.password,
                              self.run_blur)
                      .get_picture())
+                    print("aaaaaaaaaaa")
 
                     self.predict_picture()
 

@@ -69,16 +69,17 @@ class Alert:
             self.api.add_alert(1, "Bateau dans l'eau")
 
     def boat_is_near_to_swimmer(self) -> None:
-        for data in self.data_picture["predictions"]:
-            if data["class"] in ["boat", "fishing_boat",
-                                 "small_speedboat", "yatch"]:
-                for data_swimmer in self.data_picture["predictions"]:
-                    if data_swimmer["class"] == "person_in_water":
-                        if abs(data["x"] - data_swimmer["x"]) < 50 and \
-                                abs(data["y"] - data_swimmer["y"]) < 50:
-                            self.number_alerts += 1
-                            self.api.add_alert(2, "Un bateau est proche d'une "
-                                                  "personne")
+        for prediction in self.data_picture:
+            for data in prediction.get("predictions", []):
+                if data["class"] in ["boat", "fishing_boat",
+                                     "small_speedboat", "yatch"]:
+                    for data_swimmer in prediction.get("predictions", []):
+                        if data_swimmer["class"] == "person_in_water":
+                            if abs(data["x"] - data_swimmer["x"]) < 50 and \
+                                    abs(data["y"] - data_swimmer["y"]) < 50:
+                                self.number_alerts += 1
+                                self.api.add_alert(2, "Un bateau est proche d'une personne")
+
 
     def rain(self) -> None:
         if self.weather.get_precipitation() > .8:
@@ -91,11 +92,12 @@ class Alert:
             self.api.add_alert(2, "Vent violents")
 
     def swimmer_away(self) -> None:
-        for data in self.data_picture["predictions"]:
-            if data["class"] == "person_in_water":
-                if self.distance_swimmer(data) > 100:
-                    self.number_alerts += 1
-                    self.api.add_alert(1, "Une personne s'éloigne")
+        for prediction in self.data_picture:
+            for data in prediction.get("predictions", []):
+                if data["class"] == "person_in_water":
+                    if self.distance_swimmer(data) > 100:
+                        self.number_alerts += 1
+                        self.api.add_alert(1, "Une personne s'éloigne")
 
     def hot(self) -> None:
         if self.weather.get_temperature() > 35:
@@ -109,14 +111,14 @@ class Alert:
 
     def swimmer_in_danger_zone(self) -> None:
         danger_zone: list[list[int]] = self.zone.get_zone_red()
-        for data in self.data_picture["predictions"]:
-            if data["class"] == "person_in_water":
-                for zone in danger_zone:
-                    if zone[0] < data["x"] < zone[0] + zone[2] and \
-                            zone[1] < data["y"] < zone[1] + zone[3]:
-                        self.number_alerts += 1
-                        self.api.add_alert(2, "Une personne est dans une zone "
-                                              "dangereuse")
+        for prediction in self.data_picture:
+            for data in prediction.get("predictions", []):
+                if data["class"] == "person_in_water":
+                    for zone in danger_zone:
+                        if zone[0] < data["x"] < zone[0] + zone[2] and \
+                                zone[1] < data["y"] < zone[1] + zone[3]:
+                            self.number_alerts += 1
+                            self.api.add_alert(2, "Une personne est dans une zone dangereuse")
 
     def get_sea_dimensions(self) -> list[int]:
         for data in self.data_picture["predictions"]:
@@ -125,26 +127,24 @@ class Alert:
 
     def swimmer_in_danger_zone_if_sea_is_not_detected(self) -> None:
         danger_zone: list[list[int]] = self.zone.get_zone_orange()
-        for data in self.data_picture["predictions"]:
-            if data["class"] == "person_in_water":
-                for zone in danger_zone:
-                    if zone[0] < data["x"] < zone[0] + zone[2] and \
-                            zone[1] < data["y"] < zone[1] + zone[3]:
-                        sea_dimensions = self.get_sea_dimensions()
-                        if not (sea_dimensions[0] < zone[0] <
-                                sea_dimensions[0] + sea_dimensions[2] and
-                                sea_dimensions[0] < zone[0] + zone[2] <
-                                sea_dimensions[0] + sea_dimensions[2] and
-                                sea_dimensions[1] < zone[1] <
-                                sea_dimensions[1] + sea_dimensions[3] and
-                                sea_dimensions[1] < zone[1] + zone[3] <
-                                sea_dimensions[1] + sea_dimensions[3]):
-                            self.number_alerts += 1
-                            self.api.add_alert(2, "Une "
-                                                  "personne est dans une zone "
-                                                  "dangereuse (Niveau"
-                                                  " de la mer "
-                                                  "faible)")
+        for prediction in self.data_picture:
+            for data in prediction.get("predictions", []):
+                if data["class"] == "person_in_water":
+                    for zone in danger_zone:
+                        if zone[0] < data["x"] < zone[0] + zone[2] and \
+                                zone[1] < data["y"] < zone[1] + zone[3]:
+                            sea_dimensions = self.get_sea_dimensions()
+                            if not (sea_dimensions[0] < zone[0] <
+                                    sea_dimensions[0] + sea_dimensions[2] and
+                                    sea_dimensions[0] < zone[0] + zone[2] <
+                                    sea_dimensions[0] + sea_dimensions[2] and
+                                    sea_dimensions[1] < zone[1] <
+                                    sea_dimensions[1] + sea_dimensions[3] and
+                                    sea_dimensions[1] < zone[1] + zone[3] <
+                                    sea_dimensions[1] + sea_dimensions[3]):
+                                self.number_alerts += 1
+                                self.api.add_alert(2, "Une personne est dans une zone dangereuse (Niveau de la mer faible)")
+
 
     def swimmer_in_long_zone(self) -> None:
         danger_zone: list[list[int]] = self.zone.get_zone_green()
