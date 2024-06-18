@@ -29,5 +29,5 @@ class City:
                        'stop_detection from CITY '
                        'where detector_id = %s', (self.detector_id,))
         result = cursor.fetchall()
-        cursor.close()
+        print(result)
         return result
