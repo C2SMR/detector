@@ -9,6 +9,7 @@ from detector import Detector
 from api import API
 from alert import Alert
 from city import City
+from scraper import Scraper
 from decimal import Decimal
 from datetime import date, timedelta, datetime
 import json
@@ -75,7 +76,7 @@ class Main:
                         valid_results.append(r)
                         break
                     else:
-                        print(f"Résultat JSON vide pour l'image de {self.city}.")
+                        print(f"Pas de résultat {self.city}.")
                 except AttributeError as e:
                     print(f"Erreur lors du traitement de l'image pour {self.city}: {e}")
 
@@ -101,8 +102,10 @@ class Main:
         print("aaaaaaaaaa")
 
         for city in self.CITY:
-            print("aaaaaaaaaa")
-            rtsp_url = f"rtsp://{city[4]}:{city[5]}@{city[3]}:554/h264Preview_01_sub"
+            print("bbbbbbbbbbb")
+            rtsp_url = f"rtsp://{city[4]}:{city[5]}@{city[3]}/h264Preview_01_sub"
+            print(city[5])
+            print(rtsp_url)
             
             cap = cv2.VideoCapture(rtsp_url)
             if not cap.isOpened():
@@ -139,6 +142,9 @@ class Main:
 
                     for frame, city_name in frames:
                         if city_name == self.city:
+
+                            Scraper(self.city, self.run_blur).get_picture(frame)
+                            
                             self.predict_picture(frame)
 
                             self.detector = Detector(self.actual_data_predict_picture)
