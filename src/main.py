@@ -168,10 +168,10 @@ class Main:
                             
                             print('eeeeeeeee')
 
-                            #self.alert = Alert(self.latitude, self.longitude,
-                            #                   self.actual_data_predict_picture,
-                            #                   self.api, self.city, self.mydb)
-                            #self.alert.run()
+                            self.alert = Alert(self.latitude, self.longitude,
+                                               self.actual_data_predict_picture,
+                                               self.api, self.city, self.mydb)
+                            self.alert.run()
 
                             print('iiiiiiiiiiii')
 
