@@ -2,6 +2,7 @@ import time
 import sys
 import mysql.connector
 import cv2
+import os
 from ultralytics import YOLO
 
 from config import FOLDER_PICTURE
@@ -56,6 +57,7 @@ class Main:
         )
         self.CITY = City(self.mydb, self.detector_id).return_city()
         self.model = YOLO("weight.pt")
+        self.dry_run = os.getenv('DRY', '0') == '1'
         self.run()
 
     def verif_time_one_hour(self) -> bool:
@@ -103,7 +105,7 @@ class Main:
 
         for city in self.CITY:
             print("bbbbbbbbbbb")
-            rtsp_url = f"rtsp://{city[4]}:{city[5]}@{city[3]}/h264Preview_01_sub"
+            rtsp_url = f"rtsp://admin:{city[5]}@{city[3]}/h264Preview_01_sub"
             print(city[5])
             print(rtsp_url)
             
@@ -120,6 +122,7 @@ class Main:
         while True:
             frames = []
             for cap, city_name in caps:
+                cap.set(cv2.CAP_PROP_POS_MSEC, 1000) 
                 ret, frame = cap.read()
                 if not ret:
                     print(f"Erreur: Impossible de lire la caméra a {city_name}.")
@@ -142,20 +145,35 @@ class Main:
 
                     for frame, city_name in frames:
                         if city_name == self.city:
+                            print(f"Processing frame for city: {self.city}")
 
-                            Scraper(self.city, self.run_blur).get_picture(frame)
+                            (Scraper(self.city,
+                             self.ip,
+                             self.user_name,
+                             self.password,
+                             self.run_blur)
+                     .get_picture(frame))
+                            
                             
                             self.predict_picture(frame)
 
+                            print('cccccccc')
+
                             self.detector = Detector(self.actual_data_predict_picture)
+
+                            print('dddddddd')
 
                             self.api.set_number_people(self.detector.get_nb_beach(),
                                                        self.detector.get_nb_sea())
+                            
+                            print('eeeeeeeee')
 
-                            self.alert = Alert(self.latitude, self.longitude,
-                                               self.actual_data_predict_picture,
-                                               self.api, self.city, self.mydb)
-                            self.alert.run()
+                            #self.alert = Alert(self.latitude, self.longitude,
+                            #                   self.actual_data_predict_picture,
+                            #                   self.api, self.city, self.mydb)
+                            #self.alert.run()
+
+                            print('iiiiiiiiiiii')
 
                             if self.verif_time_one_hour():
                                 for j in range(len(self.CITY)):
@@ -171,13 +189,21 @@ class Main:
 
                             self.api.add_picture_alert_or_moment(FOLDER_PICTURE + self.city + '.png')
                             print(f'City: {self.city} has run in : {time.time() - self.time_start}')
+
+                            print('fffffffffff')
                 else:
                     print(f'City: {self.city} pass')
 
-            for frame, _ in frames:
-                cv2.imshow('Video', frame)
-            if cv2.waitKey(1) & 0xFF == ord('a'):
-                break
+            if not self.dry_run:
+                image_path = "./picture/Villers-sur-mer.png"
+                image = cv2.imread(image_path)
+                if image is not None:
+                    cv2.imshow('Video', image)
+                else:
+                    print("Pas d'image")
+
+                if cv2.waitKey(1) & 0xFF == ord('a'):
+                    break
 
         for cap, _ in caps:
             cap.release()
