@@ -32,7 +32,6 @@ class Scraper:
             print('blur enable')
 
     def apply_blur_on_picture(self):
-        print("c'est ok ? ")
         img = cv2.imread(f'{self.folder_picture}/{self.city}.png')
         face_cascade = cv2.CascadeClassifier('../haarcascade_'
                                              'frontalface_default.xml')

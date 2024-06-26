@@ -48,6 +48,7 @@ class Main:
         self.one_hour = 60 * 60
         self.time_for_one_hour = time.time()
         self.detector_id = int(sys.argv[7])
+        self.dry_mode = int(sys.argv[8])
         self.mydb = mysql.connector.connect(
             host=sys.argv[3],
             user=sys.argv[4],
@@ -57,7 +58,6 @@ class Main:
         )
         self.CITY = City(self.mydb, self.detector_id).return_city()
         self.model = YOLO("weight.pt")
-        self.dry_run = os.getenv('DRY', '0') == '1'
         self.run()
 
     def verif_time_one_hour(self) -> bool:
@@ -97,17 +97,12 @@ class Main:
         self.run_blur = self.CITY[index][6]
         self.launch_detection = self.CITY[index][8]
         self.stop_detection = self.CITY[index][9]
+        self.cache_size = self.CITY[index][10] if self.CITY[index][10] is not None else 4
 
     def run(self):
         caps = []
-        print(len(self.CITY))
-        print("aaaaaaaaaa")
-
         for city in self.CITY:
-            print("bbbbbbbbbbb")
             rtsp_url = f"rtsp://admin:{city[5]}@{city[3]}/h264Preview_01_sub"
-            print(city[5])
-            print(rtsp_url)
             
             cap = cv2.VideoCapture(rtsp_url)
             if not cap.isOpened():
@@ -157,23 +152,20 @@ class Main:
                             
                             self.predict_picture(frame)
 
-                            print('cccccccc')
 
                             self.detector = Detector(self.actual_data_predict_picture)
 
-                            print('dddddddd')
 
                             self.api.set_number_people(self.detector.get_nb_beach(),
                                                        self.detector.get_nb_sea())
                             
-                            print('eeeeeeeee')
 
+                            cache_size = City(self.mydb, self.detector_id).get_cache_size()  
                             self.alert = Alert(self.latitude, self.longitude,
                                                self.actual_data_predict_picture,
-                                               self.api, self.city, self.mydb)
+                                               self.api, self.city, self.mydb, cache_size)
                             self.alert.run()
 
-                            print('iiiiiiiiiiii')
 
                             if self.verif_time_one_hour():
                                 for j in range(len(self.CITY)):
@@ -190,15 +182,12 @@ class Main:
                             self.api.add_picture_alert_or_moment(FOLDER_PICTURE + self.city + '.png')
                             print(f'City: {self.city} has run in : {time.time() - self.time_start}')
 
-                            print('fffffffffff')
                 else:
                     print(f'City: {self.city} pass')
 
-            if not self.dry_run:
-                image_path = "./picture/Villers-sur-mer.png"
-                image = cv2.imread(image_path)
-                if image is not None:
-                    cv2.imshow('Video', image)
+            if self.dry_mode == 1:
+                if frame is not None:
+                    cv2.imshow('Video', frame)
                 else:
                     print("Pas d'image")
 
