@@ -2,7 +2,6 @@ import time
 import sys
 import mysql.connector
 import cv2
-import os
 from ultralytics import YOLO
 
 from config import FOLDER_PICTURE
@@ -14,6 +13,7 @@ from scraper import Scraper
 from decimal import Decimal
 from datetime import date, timedelta, datetime
 import json
+
 
 class Main:
     password: str
@@ -74,13 +74,15 @@ class Main:
                 try:
                     json_data = r.tojson()
                     if json_data is not None:
-                        self.actual_data_predict_picture = json.loads(json_data)
+                        self.actual_data_predict_picture = \
+                              json.loads(json_data)
                         valid_results.append(r)
                         break
                     else:
                         print(f"Pas de résultat {self.city}.")
                 except AttributeError as e:
-                    print(f"Erreur lors du traitement de l'image pour {self.city}: {e}")
+                    print(f"Erreur lors du traitement \
+                          de l'image pour {self.city}: {e}")
 
         if not valid_results:
             print(f"Aucune détection valide pour l'image de {self.city}.")
@@ -97,13 +99,14 @@ class Main:
         self.run_blur = self.CITY[index][6]
         self.launch_detection = self.CITY[index][8]
         self.stop_detection = self.CITY[index][9]
-        self.cache_size = self.CITY[index][10] if self.CITY[index][10] is not None else 4
+        self.cache_size = self.CITY[index][10] if \
+            self.CITY[index][10] is not None else 4
 
     def run(self):
         caps = []
         for city in self.CITY:
             rtsp_url = f"rtsp://admin:{city[5]}@{city[3]}/h264Preview_01_sub"
-            
+
             cap = cv2.VideoCapture(rtsp_url)
             if not cap.isOpened():
                 print(f"Erreur: {city[0]}.")
@@ -111,16 +114,17 @@ class Main:
                 caps.append((cap, city[0]))
 
         if not caps:
-            print("Erreur: Aucune caméra ")
+            print("Erreur: Aucune caméra")
             return
 
         while True:
             frames = []
             for cap, city_name in caps:
-                cap.set(cv2.CAP_PROP_POS_MSEC, 1000) 
+                cap.set(cv2.CAP_PROP_POS_MSEC, 1000)
                 ret, frame = cap.read()
                 if not ret:
-                    print(f"Erreur: Impossible de lire la caméra a {city_name}.")
+                    print(f"Erreur: Impossible de lire \
+                           la caméra a {city_name}.")
                     continue
                 frames.append((frame, city_name))
 
@@ -136,7 +140,11 @@ class Main:
                                 actual_hour > int(self.stop_detection):
                             print(f'City: {self.city} pass')
                             continue
-                    self.api = API(self.city, self.api_key, self.latitude, self.longitude)
+                    self.api = API(
+                        self.city,
+                        self.api_key,
+                        self.latitude,
+                        self.longitude)
 
                     for frame, city_name in frames:
                         if city_name == self.city:
@@ -147,40 +155,53 @@ class Main:
                              self.user_name,
                              self.password,
                              self.run_blur)
-                     .get_picture(frame))
-                            
-                            
+                                .get_picture(frame))
+
                             self.predict_picture(frame)
 
+                            self.detector\
+                                = Detector(self.actual_data_predict_picture)
 
-                            self.detector = Detector(self.actual_data_predict_picture)
+                            self.api.set_number_people(
+                                self.detector.get_nb_beach(),
+                                self.detector.get_nb_sea()
+                            )
 
-
-                            self.api.set_number_people(self.detector.get_nb_beach(),
-                                                       self.detector.get_nb_sea())
-                            
-
-                            cache_size = City(self.mydb, self.detector_id).get_cache_size()  
-                            self.alert = Alert(self.latitude, self.longitude,
-                                               self.actual_data_predict_picture,
-                                               self.api, self.city, self.mydb, cache_size)
+                            cache_size = City(self.mydb, self.detector_id)\
+                                .get_cache_size()
+                            self.alert = Alert(
+                                self.latitude,
+                                self.longitude,
+                                self.actual_data_predict_picture,
+                                self.api,
+                                self.city,
+                                self.mydb,
+                                cache_size
+                            )
                             self.alert.run()
-
 
                             if self.verif_time_one_hour():
                                 for j in range(len(self.CITY)):
                                     self.set_value_for_city(j)
-                                    print(f"Updating API data for city: {self.city}")
-                                    self.api = API(self.city, self.api_key,
-                                                   self.latitude, self.longitude)
-                                    self.api.add_data_city(self.detector.get_nb_beach(),
-                                                           self.detector.get_nb_sea(),
-                                                           self.detector.get_visibility())
-
+                                    print(f"Updating API data for city:\
+                                           {self.city}")
+                                    self.api = API(
+                                        self.city,
+                                        self.api_key,
+                                        self.latitude,
+                                        self.longitude
+                                    )
+                                    self.api.add_data_city(
+                                        self.detector.get_nb_beach(),
+                                        self.detector.get_nb_sea(),
+                                        self.detector.get_visibility()
+                                    )
                                 self.set_value_for_city(i)
-
-                            self.api.add_picture_alert_or_moment(FOLDER_PICTURE + self.city + '.png')
-                            print(f'City: {self.city} has run in : {time.time() - self.time_start}')
+                            self.api.\
+                                add_picture_alert_or_moment(FOLDER_PICTURE +
+                                                            self.city + '.png')
+                            print(f'City: {self.city} has run in :\
+                                   {time.time() - self.time_start}')
 
                 else:
                     print(f'City: {self.city} pass')
@@ -197,6 +218,7 @@ class Main:
         for cap, _ in caps:
             cap.release()
         cv2.destroyAllWindows()
+
 
 if __name__ == '__main__':
     Main()

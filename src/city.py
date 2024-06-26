@@ -14,27 +14,30 @@ class City:
 
     def get_cache_size(self) -> int:
         cursor = self.mydb.cursor()
-        cursor.execute('SELECT cache_size FROM CITY WHERE detector_id = %s', (self.detector_id,))
+        cursor.execute('SELECT cache_size FROM CITY WHERE detector_id = %s',
+                       (self.detector_id,))
         result = cursor.fetchone()
         if result and result[0]:
             return result[0]
-        return 4  
+        return 4
 
     def return_city(self) -> list[tuple[float |
                                         int | Decimal | str | bytes | date |
                                         timedelta | datetime | set[str] |
                                         bool | None, ...]]:
         cursor = self.mydb.cursor()
-        cursor.execute('select NAME, '
+        cursor.execute('SELECT NAME, '
                        'latitude, '
-                       'longitude,ip,'
+                       'longitude, '
+                       'ip, '
                        'name_ip, '
-                       'password_ip,'
-                       'blur,'
-                       'run_detection,'
+                       'password_ip, '
+                       'blur, '
+                       'run_detection, '
                        'type_detection, '
-                       'launch_detection,'
-                       'stop_detection from CITY '
-                       'where detector_id = %s', (self.detector_id,))
+                       'launch_detection, '
+                       'stop_detection '
+                       'FROM CITY '
+                       'WHERE detector_id = %s', (self.detector_id,))
         result = cursor.fetchall()
         return result
