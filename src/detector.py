@@ -6,9 +6,10 @@ class Detector:
 
     def count_class(self, name_class: str) -> int:
         count: int = 0
-        for data in self.data_picture["predictions"]:
-            if data["class"] == name_class:
-                count += 1
+        for prediction in self.data_picture:
+            for data in prediction.get("predictions", []):
+                if data["class"] == name_class:
+                    count += 1
         return count
 
     def get_nb_beach(self) -> int:
@@ -18,16 +19,19 @@ class Detector:
         return self.count_class("person_in_water")
 
     def get_visibility(self) -> int:
-        for data in self.data_picture["predictions"]:
-            if data["class"] == "sea":
-                width_sea = data["width"]
-                height_sea = data["height"]
-                width_picture = self.data_picture["image"]["width"]
-                height_picture = self.data_picture["image"]["height"]
-                return int(width_sea * height_sea /
-                           width_picture * height_picture)
+        for prediction in self.data_picture:
+            for data in prediction.get("predictions", []):
+                if data["class"] == "sea":
+                    width_sea = data["width"]
+                    height_sea = data["height"]
+                    width_picture = prediction["image"]["width"]
+                    height_picture = prediction["image"]["height"]
+                    return int(width_sea * height_sea /
+                               (width_picture * height_picture))
         return -1
 
     def get_nb_boat(self) -> int:
-        return self.count_class("boat") + self.count_class("fishing_boat") + \
-            self.count_class("small_speedboat") + self.count_class("yatch")
+        return (self.count_class("boat") +
+                self.count_class("fishing_boat") +
+                self.count_class("small_speedboat") +
+                self.count_class("yacht"))
