@@ -19,9 +19,8 @@ class Alert:
     alert_cache: list
 
     def __init__(self, latitude: float, longitude: float, data_picture: object,
-                 api: API, city: str, mydb, cache_size: int):
+                 api: API, city: str, cache_size: int):
         self.city = city
-        self.mydb = mydb
         self.latitude = latitude
         self.longitude = longitude
         self.data_picture = data_picture
@@ -29,7 +28,7 @@ class Alert:
         self.weather = Weather(self.latitude, self.longitude)
         self.detector = Detector(self.data_picture)
         self.api.delete_alert_by_city()
-        self.zone = Zone(self.city, self.mydb)
+        self.zone = Zone(self.city, self.api)
         self.alert_cache = []
         self.cache_size = cache_size
         self.run()

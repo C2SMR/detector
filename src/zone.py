@@ -1,34 +1,18 @@
-import mysql.connector
-
+from api import API
 
 class Zone:
     city: str
-    mydb: mysql.connector.connection.MySQLConnection
+    api: API
 
-    def __init__(self, city: str, mydb):
-        self.city: str = city
-        self.mydb = mydb
+    def __init__(self, city: str, api: API):
+        self.city = city
+        self.api = api
 
     def get_zone_orange(self):
-        cursor = self.mydb.cursor()
-        cursor.execute('select x1, x2, y1, y2 from line '
-                       'where ville = %s and type=1', (self.city,))
-        result = cursor.fetchall()
-        cursor.close()
-        return result
+        return self.api.get_zone_orange()
 
     def get_zone_red(self):
-        cursor = self.mydb.cursor()
-        cursor.execute('select x1, x2, y1, y2 from line '
-                       'where ville = %s and type=2', (self.city,))
-        result = cursor.fetchall()
-        cursor.close()
-        return result
+        return self.api.get_zone_red()
 
     def get_zone_green(self):
-        cursor = self.mydb.cursor()
-        cursor.execute('select x1, x2, y1, y2 from line '
-                       'where ville = %s and type=3', (self.city,))
-        result = cursor.fetchall()
-        cursor.close()
-        return result
+        return self.api.get_zone_green()

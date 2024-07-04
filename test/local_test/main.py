@@ -11,7 +11,10 @@ def main():
 
     while True:
         ret, frame = cap.read()
-        results = model(frame, agnostic_nms=True)[0]
+        if not ret:
+            break
+
+        results = model.track(frame, persist=True)
 
         if not results or len(results) == 0:
             continue
