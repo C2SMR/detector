@@ -1,5 +1,6 @@
 from api import API
 
+
 class Zone:
     city: str
     api: API

@@ -1,5 +1,6 @@
 from api import API
 
+
 class City:
     api: API
     detector_id: int
