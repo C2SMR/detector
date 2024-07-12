@@ -92,3 +92,43 @@ class API:
         imgdata = base64.b64decode(picture_base_64)
         with open('picture/' + self.city + '.png', "wb") as f:
             f.write(imgdata)
+
+    def get_city_data(self, detector_id: int):
+        response = requests.get(f"{self.url}/city",
+                                params={
+                                    "detector_id": detector_id
+                                    })
+        response.raise_for_status()
+        return response.json().get("data", [])
+
+    def get_cache_size(self, detector_id: int):
+        response = requests.get(f"{self.url}/cache_size",
+                                params={
+                                    "detector_id": detector_id
+                                    })
+        response.raise_for_status()
+        return response.json().get("cache_size", 4)
+
+    def get_zone_orange(self):
+        response = requests.get(f"{self.url}/zone_orange",
+                                params={
+                                    "city": self.city
+                                    })
+        response.raise_for_status()
+        return response.json().get("data", [])
+
+    def get_zone_red(self):
+        response = requests.get(f"{self.url}/zone_red",
+                                params={
+                                    "city": self.city
+                                    })
+        response.raise_for_status()
+        return response.json().get("data", [])
+
+    def get_zone_green(self):
+        response = requests.get(f"{self.url}/zone_green",
+                                params={
+                                    "city": self.city
+                                    })
+        response.raise_for_status()
+        return response.json().get("data", [])

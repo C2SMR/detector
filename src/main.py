@@ -49,14 +49,7 @@ class Main:
         self.time_for_one_hour = time.time()
         self.detector_id = int(sys.argv[7])
         self.dry_mode = int(sys.argv[8])
-        self.mydb = mysql.connector.connect(
-            host=sys.argv[3],
-            user=sys.argv[4],
-            password=sys.argv[5],
-            port=sys.argv[6],
-            database='C2SMR'
-        )
-        self.CITY = City(self.mydb, self.detector_id).return_city()
+        self.CITY = City(self.api, self.detector_id).return_city()
         self.model = YOLO("weight.pt")
         self.run()
 
@@ -167,7 +160,7 @@ class Main:
                                 self.detector.get_nb_sea()
                             )
 
-                            cache_size = City(self.mydb, self.detector_id)\
+                            cache_size = City(self.api, self.detector_id)\
                                 .get_cache_size()
                             self.alert = Alert(
                                 self.latitude,
@@ -175,9 +168,9 @@ class Main:
                                 self.actual_data_predict_picture,
                                 self.api,
                                 self.city,
-                                self.mydb,
                                 cache_size
                             )
+
                             self.alert.run()
 
                             if self.verif_time_one_hour():

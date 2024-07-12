@@ -12,6 +12,7 @@ def main():
 
     while True:
         ret, frame = cap.read()
+        
         results = model.track(frame, persist=True)
         res_plotted = results[0].plot()
         cv2.imshow("frame", res_plotted)
