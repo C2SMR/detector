@@ -60,7 +60,7 @@ class Main:
         return False
 
     def predict_picture(self, frame):
-        results = self.model(frame)
+        results = self.model.track(frame, persist=True)
         valid_results = []
         for r in results:
             if r is not None:

@@ -128,7 +128,8 @@ class Alert:
         danger_zone: list[list[int]] = self.zone.get_zone_red()
         for prediction in self.data_picture:
             for data in prediction.get("predictions", []):
-                if data["class"] == "person_in_water":
+                if (data["class"] == "person_in_water" or
+                        data["class"] == "swimmer"):
                     for zone in danger_zone:
                         if (zone[0] < data["x"] < zone[0] + zone[2] and
                                 zone[1] < data["y"] < zone[1] + zone[3]):
