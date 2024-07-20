@@ -24,14 +24,7 @@ class Scraper:
         self.folder_picture = 'picture/'
         self.run_blur = run_blur
 
-    def get_picture(self):
-        url = (f'rtsp://{self.user_name}:'
-               f'{self.password}@{self.ip}'
-               f'/h264Preview_01_sub')
-        self.video = cv2.VideoCapture(url)
-
-        _, frame = self.video.read()
-
+    def get_picture(self, frame):
         cv2.imwrite(f'{self.folder_picture}/{self.city}.png', frame)
         if self.run_blur:
             self.apply_blur_on_picture()
