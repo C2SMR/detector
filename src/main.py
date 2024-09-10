@@ -68,7 +68,7 @@ class Main:
                     json_data = r.tojson()
                     if json_data is not None:
                         self.actual_data_predict_picture = \
-                              json.loads(json_data)
+                            json.loads(json_data)
                         valid_results.append(r)
                         break
                     else:
@@ -98,7 +98,11 @@ class Main:
     def run(self):
         caps = []
         for city in self.CITY:
-            rtsp_url = f"rtsp://admin:{city[5]}@{city[3]}/h264Preview_01_sub"
+
+            if city[8] is not None:
+                rtsp_url = city[8]
+            else:
+                rtsp_url = f"rtsp://admin:{city[5]}@{city[3]}/h264Preview_01_sub"
 
             cap = cv2.VideoCapture(rtsp_url)
             if not cap.isOpened():
@@ -144,15 +148,15 @@ class Main:
                             print(f"Processing frame for city: {self.city}")
 
                             (Scraper(self.city,
-                             self.ip,
-                             self.user_name,
-                             self.password,
-                             self.run_blur)
-                                .get_picture(frame))
+                                     self.ip,
+                                     self.user_name,
+                                     self.password,
+                                     self.run_blur)
+                             .get_picture(frame))
 
                             self.predict_picture(frame)
 
-                            self.detector\
+                            self.detector \
                                 = Detector(self.actual_data_predict_picture)
 
                             self.api.set_number_people(
@@ -160,7 +164,7 @@ class Main:
                                 self.detector.get_nb_sea()
                             )
 
-                            cache_size = City(self.api, self.detector_id)\
+                            cache_size = City(self.api, self.detector_id) \
                                 .get_cache_size()
                             self.alert = Alert(
                                 self.latitude,
@@ -190,7 +194,7 @@ class Main:
                                         self.detector.get_visibility()
                                     )
                                 self.set_value_for_city(i)
-                            self.api.\
+                            self.api. \
                                 add_picture_alert_or_moment(FOLDER_PICTURE +
                                                             self.city + '.png')
                             print(f'City: {self.city} has run in :\
