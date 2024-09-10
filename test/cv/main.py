@@ -25,27 +25,30 @@ def main():
             nb_line_max_pixel = i
             nb_max_pixel = nb_pixel
 
-    cv2.line(image, (0, nb_line_max_pixel),
-             (width_picture, nb_line_max_pixel),
-             (0, 255, 0), 2)
+    cv2.line(
+        image,
+        (0, nb_line_max_pixel),
+        (width_picture, nb_line_max_pixel),
+        (0, 255, 0),
+        2,
+    )
 
     for i in range(nb_line_max_pixel):
         for j in range(width_picture):
             if filter[i][j] == 255:
-                print(f'x: {j} y: {i}')
+                print(f"x: {j} y: {i}")
 
     print(nb_line_max_pixel)
     print(nb_max_pixel)
     print(time.time() - time_start)
 
     while True:
-
         image = cv2.resize(image, (800, 600))
         filter = cv2.resize(filter, (800, 600))
-        cv2.imshow('thresh', filter)
-        cv2.imshow('image', image)
+        cv2.imshow("thresh", filter)
+        cv2.imshow("image", image)
 
-        if cv2.waitKey(30) == 'q':
+        if cv2.waitKey(30) == "q":
             break
 
 

@@ -4,10 +4,9 @@ import cv2
 
 
 class Main:
-
     def __init__(self):
         self.actual_data_predict_picture = None
-        self.rf = Roboflow(api_key="rBzJE5DXKnwjcrNDnOxw")
+        self.rf = Roboflow(api_key=sys.argv[2])
         self.project = self.rf.workspace().project("c2smr")
         self.model = self.project.version(4).model
         self.run()
@@ -23,8 +22,15 @@ class Main:
             w = data["width"]
             h = data["height"]
             cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
-            cv2.putText(image, data["class"], (x, y - 5),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+            cv2.putText(
+                image,
+                data["class"],
+                (x, y - 5),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.5,
+                (0, 255, 0),
+                2,
+            )
 
         while True:
             image = cv2.resize(image, (800, 600))
@@ -33,5 +39,5 @@ class Main:
                 break
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     Main()

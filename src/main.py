@@ -24,10 +24,22 @@ class Main:
     longitude: float
     city: str
     detector: Detector
-    CITY: list[tuple[float |
-                     int | Decimal | str | bytes | date |
-                     timedelta | datetime | set[str] | bool |
-                     None, ...]]
+    CITY: list[
+        tuple[
+            float
+            | int
+            | Decimal
+            | str
+            | bytes
+            | date
+            | timedelta
+            | datetime
+            | set[str]
+            | bool
+            | None,
+            ...,
+        ]
+    ]
     alert: Alert
     actual_data_predict_picture: any
     one_hour: int
@@ -67,15 +79,16 @@ class Main:
                 try:
                     json_data = r.tojson()
                     if json_data is not None:
-                        self.actual_data_predict_picture = \
-                              json.loads(json_data)
+                        self.actual_data_predict_picture = json.loads(json_data)
                         valid_results.append(r)
                         break
                     else:
                         print(f"Pas de résultat {self.city}.")
                 except AttributeError as e:
-                    print(f"Erreur lors du traitement \
-                          de l'image pour {self.city}: {e}")
+                    print(
+                        f"Erreur lors du traitement \
+                          de l'image pour {self.city}: {e}"
+                    )
 
         if not valid_results:
             print(f"Aucune détection valide pour l'image de {self.city}.")
@@ -92,13 +105,17 @@ class Main:
         self.run_blur = self.CITY[index][6]
         self.launch_detection = self.CITY[index][8]
         self.stop_detection = self.CITY[index][9]
-        self.cache_size = self.CITY[index][10] if \
-            self.CITY[index][10] is not None else 4
+        self.cache_size = (
+            self.CITY[index][10] if self.CITY[index][10] is not None else 4
+        )
 
     def run(self):
         caps = []
         for city in self.CITY:
-            rtsp_url = f"rtsp://admin:{city[5]}@{city[3]}/h264Preview_01_sub"
+            if city[8] is not None:
+                rtsp_url = city[8]
+            else:
+                rtsp_url = f"rtsp://admin:{city[5]}@{city[3]}/h264Preview_01_sub"
 
             cap = cv2.VideoCapture(rtsp_url)
             if not cap.isOpened():
@@ -116,8 +133,10 @@ class Main:
                 cap.set(cv2.CAP_PROP_POS_MSEC, 1000)
                 ret, frame = cap.read()
                 if not ret:
-                    print(f"Erreur: Impossible de lire \
-                           la caméra a {city_name}.")
+                    print(
+                        f"Erreur: Impossible de lire \
+                           la caméra a {city_name}."
+                    )
                     continue
                 frames.append((frame, city_name))
 
@@ -129,46 +148,47 @@ class Main:
                     if self.launch_detection is not None:
                         actual_hour = datetime.now().hour
 
-                        if actual_hour < int(self.launch_detection) or \
-                                actual_hour > int(self.stop_detection):
-                            print(f'City: {self.city} pass')
+                        if actual_hour < int(
+                            self.launch_detection
+                        ) or actual_hour > int(self.stop_detection):
+                            print(f"City: {self.city} pass")
                             continue
                     self.api = API(
-                        self.city,
-                        self.api_key,
-                        self.latitude,
-                        self.longitude)
+                        self.city, self.api_key, self.latitude, self.longitude
+                    )
 
                     for frame, city_name in frames:
                         if city_name == self.city:
                             print(f"Processing frame for city: {self.city}")
 
-                            (Scraper(self.city,
-                             self.ip,
-                             self.user_name,
-                             self.password,
-                             self.run_blur)
-                                .get_picture(frame))
+                            (
+                                Scraper(
+                                    self.city,
+                                    self.ip,
+                                    self.user_name,
+                                    self.password,
+                                    self.run_blur,
+                                ).get_picture(frame)
+                            )
 
                             self.predict_picture(frame)
 
-                            self.detector\
-                                = Detector(self.actual_data_predict_picture)
+                            self.detector = Detector(self.actual_data_predict_picture)
 
                             self.api.set_number_people(
-                                self.detector.get_nb_beach(),
-                                self.detector.get_nb_sea()
+                                self.detector.get_nb_beach(), self.detector.get_nb_sea()
                             )
 
-                            cache_size = City(self.api, self.detector_id)\
-                                .get_cache_size()
+                            cache_size = City(
+                                self.api, self.detector_id
+                            ).get_cache_size()
                             self.alert = Alert(
                                 self.latitude,
                                 self.longitude,
                                 self.actual_data_predict_picture,
                                 self.api,
                                 self.city,
-                                cache_size
+                                cache_size,
                             )
 
                             self.alert.run()
@@ -176,36 +196,40 @@ class Main:
                             if self.verif_time_one_hour():
                                 for j in range(len(self.CITY)):
                                     self.set_value_for_city(j)
-                                    print(f"Updating API data for city:\
-                                           {self.city}")
+                                    print(
+                                        f"Updating API data for city:\
+                                           {self.city}"
+                                    )
                                     self.api = API(
                                         self.city,
                                         self.api_key,
                                         self.latitude,
-                                        self.longitude
+                                        self.longitude,
                                     )
                                     self.api.add_data_city(
                                         self.detector.get_nb_beach(),
                                         self.detector.get_nb_sea(),
-                                        self.detector.get_visibility()
+                                        self.detector.get_visibility(),
                                     )
                                 self.set_value_for_city(i)
-                            self.api.\
-                                add_picture_alert_or_moment(FOLDER_PICTURE +
-                                                            self.city + '.png')
-                            print(f'City: {self.city} has run in :\
-                                   {time.time() - self.time_start}')
+                            self.api.add_picture_alert_or_moment(
+                                FOLDER_PICTURE + self.city + ".png"
+                            )
+                            print(
+                                f"City: {self.city} has run in :\
+                                   {time.time() - self.time_start}"
+                            )
 
                 else:
-                    print(f'City: {self.city} pass')
+                    print(f"City: {self.city} pass")
 
             if self.dry_mode == 1:
                 if frame is not None:
-                    cv2.imshow('Video', frame)
+                    cv2.imshow("Video", frame)
                 else:
                     print("Pas d'image")
 
-                if cv2.waitKey(1) & 0xFF == ord('a'):
+                if cv2.waitKey(1) & 0xFF == ord("a"):
                     break
 
         for cap, _ in caps:
@@ -213,5 +237,5 @@ class Main:
         cv2.destroyAllWindows()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     Main()
