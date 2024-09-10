@@ -26,12 +26,15 @@ class Detector:
                     height_sea = data["height"]
                     width_picture = prediction["image"]["width"]
                     height_picture = prediction["image"]["height"]
-                    return int(width_sea * height_sea /
-                               (width_picture * height_picture))
+                    return int(
+                        width_sea * height_sea / (width_picture * height_picture)
+                    )
         return -1
 
     def get_nb_boat(self) -> int:
-        return (self.count_class("boat") +
-                self.count_class("fishing_boat") +
-                self.count_class("small_speedboat") +
-                self.count_class("yacht"))
+        return (
+            self.count_class("boat")
+            + self.count_class("fishing_boat")
+            + self.count_class("small_speedboat")
+            + self.count_class("yacht")
+        )

@@ -18,8 +18,15 @@ class Alert:
     zone: Zone
     alert_cache: list
 
-    def __init__(self, latitude: float, longitude: float, data_picture: object,
-                 api: API, city: str, cache_size: int):
+    def __init__(
+        self,
+        latitude: float,
+        longitude: float,
+        data_picture: object,
+        api: API,
+        city: str,
+        cache_size: int,
+    ):
         self.city = city
         self.latitude = latitude
         self.longitude = longitude
@@ -85,12 +92,18 @@ class Alert:
     def boat_is_near_to_swimmer(self) -> None:
         for prediction in self.data_picture:
             for data in prediction.get("predictions", []):
-                if data["class"] in \
-                      ["boat", "fishing_boat", "small_speedboat", "yatch"]:
+                if data["class"] in [
+                    "boat",
+                    "fishing_boat",
+                    "small_speedboat",
+                    "yatch",
+                ]:
                     for data_swimmer in prediction.get("predictions", []):
                         if data_swimmer["class"] == "person_in_water":
-                            if (abs(data["x"] - data_swimmer["x"]) < 50 and
-                                    abs(data["y"] - data_swimmer["y"]) < 50):
+                            if (
+                                abs(data["x"] - data_swimmer["x"]) < 50
+                                and abs(data["y"] - data_swimmer["y"]) < 50
+                            ):
                                 self.number_alerts += 1
                                 self.add_to_cache(
                                     2, "Un bateau est proche d'une personne"
@@ -128,11 +141,12 @@ class Alert:
         danger_zone: list[list[int]] = self.zone.get_zone_red()
         for prediction in self.data_picture:
             for data in prediction.get("predictions", []):
-                if (data["class"] == "person_in_water" or
-                        data["class"] == "swimmer"):
+                if data["class"] == "person_in_water" or data["class"] == "swimmer":
                     for zone in danger_zone:
-                        if (zone[0] < data["x"] < zone[0] + zone[2] and
-                                zone[1] < data["y"] < zone[1] + zone[3]):
+                        if (
+                            zone[0] < data["x"] < zone[0] + zone[2]
+                            and zone[1] < data["y"] < zone[1] + zone[3]
+                        ):
                             self.number_alerts += 1
                             self.add_to_cache(
                                 2, "Une personne est dans une zone dangereuse"
@@ -149,44 +163,61 @@ class Alert:
             for data in prediction.get("predictions", []):
                 if data["class"] == "person_in_water":
                     for zone in danger_zone:
-                        if zone[0] < data["x"] < zone[0] + zone[2] and \
-                              zone[1] < data["y"] < zone[1] + zone[3]:
+                        if (
+                            zone[0] < data["x"] < zone[0] + zone[2]
+                            and zone[1] < data["y"] < zone[1] + zone[3]
+                        ):
                             sea_dimensions = self.get_sea_dimensions()
-                            if not (sea_dimensions[0] < zone[0]
-                                    < sea_dimensions[0]
-                                    + sea_dimensions[2] and
-                                    + zone[2] < sea_dimensions[0]
-                                    + sea_dimensions[2] and
-                                    sea_dimensions[1] < zone[1] <
-                                    sea_dimensions[1]
-                                    + sea_dimensions[3] and
-                                    sea_dimensions[1] < zone[1] + zone[3] <
-                                    sea_dimensions[1]
-                                    + sea_dimensions[3]):
+                            if not (
+                                sea_dimensions[0]
+                                < zone[0]
+                                < sea_dimensions[0] + sea_dimensions[2]
+                                and +zone[2] < sea_dimensions[0] + sea_dimensions[2]
+                                and sea_dimensions[1]
+                                < zone[1]
+                                < sea_dimensions[1] + sea_dimensions[3]
+                                and sea_dimensions[1]
+                                < zone[1] + zone[3]
+                                < sea_dimensions[1] + sea_dimensions[3]
+                            ):
                                 self.number_alerts += 1
-                                self.add_to_cache(2, "Une personne est dans \
+                                self.add_to_cache(
+                                    2,
+                                    "Une personne est dans \
                                 une zone dangereuse \
-                                (Niveau de la mer faible)")
+                                (Niveau de la mer faible)",
+                                )
 
     def swimmer_in_long_zone(self) -> None:
         danger_zone: list[list[int]] = self.zone.get_zone_green()
         for data in self.data_picture["predictions"]:
             if data["class"] == "person_in_water":
                 for zone in danger_zone:
-                    if (zone[0] < data["x"] < zone[0] + zone[2] and
-                            zone[1] < data["y"] < zone[1] + zone[3]):
+                    if (
+                        zone[0] < data["x"] < zone[0] + zone[2]
+                        and zone[1] < data["y"] < zone[1] + zone[3]
+                    ):
                         sea_dimensions = self.get_sea_dimensions()
-                        if (sea_dimensions[0] < zone[0] <
-                                sea_dimensions[0] + sea_dimensions[2] and
-                                sea_dimensions[0] < zone[0] + zone[2] <
-                                sea_dimensions[0] + sea_dimensions[2] and
-                                sea_dimensions[1] < zone[1] <
-                                sea_dimensions[1] + sea_dimensions[3] and
-                                sea_dimensions[1] < zone[1] + zone[3] <
-                                sea_dimensions[1] + sea_dimensions[3]):
+                        if (
+                            sea_dimensions[0]
+                            < zone[0]
+                            < sea_dimensions[0] + sea_dimensions[2]
+                            and sea_dimensions[0]
+                            < zone[0] + zone[2]
+                            < sea_dimensions[0] + sea_dimensions[2]
+                            and sea_dimensions[1]
+                            < zone[1]
+                            < sea_dimensions[1] + sea_dimensions[3]
+                            and sea_dimensions[1]
+                            < zone[1] + zone[3]
+                            < sea_dimensions[1] + sea_dimensions[3]
+                        ):
                             self.number_alerts += 1
-                            self.add_to_cache(2, "Une personne est \
-                                               dans une zone éloignée")
+                            self.add_to_cache(
+                                2,
+                                "Une personne est \
+                                               dans une zone éloignée",
+                            )
 
     def change_flag(self) -> None:
         if self.number_alerts < 4:
