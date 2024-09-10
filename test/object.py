@@ -7,7 +7,7 @@ prediction = {
             "height": 600,
             "confidence": 0.663,
             "class": "sea",
-            "class_id": 1
+            "class_id": 1,
         },
         {
             "x": 210,
@@ -16,7 +16,7 @@ prediction = {
             "height": 20,
             "confidence": 0.515,
             "class": "person_in_water",
-            "class_id": 1
+            "class_id": 1,
         },
         {
             "x": 320,
@@ -25,7 +25,7 @@ prediction = {
             "height": 20,
             "confidence": 0.515,
             "class": "person_in_water",
-            "class_id": 1
+            "class_id": 1,
         },
         {
             "x": 620,
@@ -34,7 +34,7 @@ prediction = {
             "height": 20,
             "confidence": 0.515,
             "class": "person_in_water",
-            "class_id": 1
+            "class_id": 1,
         },
         {
             "x": 920,
@@ -43,7 +43,7 @@ prediction = {
             "height": 20,
             "confidence": 0.515,
             "class": "person_in_water",
-            "class_id": 1
+            "class_id": 1,
         },
         {
             "x": 400,
@@ -52,7 +52,7 @@ prediction = {
             "height": 20,
             "confidence": 0.515,
             "class": "person_in_water",
-            "class_id": 1
+            "class_id": 1,
         },
         {
             "x": 900,
@@ -61,25 +61,16 @@ prediction = {
             "height": 20,
             "confidence": 0.515,
             "class": "boat",
-            "class_id": 1
-        }
+            "class_id": 1,
+        },
     ]
 }
 
 # if swimmer in danger zone then alert
-zoneRed = [
-    [1100, 250, 50, 50],
-    [900, 250, 200, 200]
-]
+zoneRed = [[1100, 250, 50, 50], [900, 250, 200, 200]]
 
 # if swimmer in danger zone and no full sea then alert
-zoneOrange = [
-    [200, 200, 100, 50],
-    [300, 200, 50, 50]
-]
+zoneOrange = [[200, 200, 100, 50], [300, 200, 50, 50]]
 
 # if water and swimmer then alert
-zoneGreen = [
-    [600, 250, 100, 100],
-    [500, 250, 50, 50]
-]
+zoneGreen = [[600, 250, 100, 100], [500, 250, 50, 50]]

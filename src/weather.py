@@ -13,13 +13,17 @@ class Weather:
         self.latitude = latitude
         self.longitude = longitude
         self.data = {}
-        self.api_url = "https://api.open-meteo.com/v1/meteofrance?" \
-                       "latitude=" + str(self.latitude) + \
-                       "&longitude=" + str(self.longitude) + \
-                       "&hourly=temperature_2m," \
-                       "precipitation," \
-                       "cloudcover,cloudcover_low," \
-                       "windspeed_10m"
+        self.api_url = (
+            "https://api.open-meteo.com/v1/meteofrance?"
+            "latitude="
+            + str(self.latitude)
+            + "&longitude="
+            + str(self.longitude)
+            + "&hourly=temperature_2m,"
+            "precipitation,"
+            "cloudcover,cloudcover_low,"
+            "windspeed_10m"
+        )
         self.fetch_data()
 
     def fetch_data(self):
@@ -28,7 +32,7 @@ class Weather:
 
     def template_get_data(self, name_data: str) -> float:
         lst: list = self.data["hourly"][name_data]
-        now: int = int(datetime.now().strftime('%H'))
+        now: int = int(datetime.now().strftime("%H"))
         return lst[now]
 
     def get_precipitation(self) -> float:

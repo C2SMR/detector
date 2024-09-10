@@ -32,43 +32,48 @@ def main():
         ret, frame = cap.read()
 
         if ret:
-
             results = model.track(frame, persist=True)
 
             results_json = json.loads(results[0].tojson())
 
             for res in results_json:
-                x1 = res['box']['x1']
-                y1 = res['box']['y1']
-                x2 = res['box']['x2']
-                y2 = res['box']['y2']
-                x3 = res['box']['x3']
-                y3 = res['box']['y3']
-                x4 = res['box']['x4']
-                y4 = res['box']['y4']
-                cv2.line(frame, (int(x1), int(y1)),
-                         (int(x2), int(y2)), (0, 255, 0), 2)
-                cv2.line(frame, (int(x2), int(y2)),
-                         (int(x3), int(y3)), (0, 255, 0), 2)
-                cv2.line(frame, (int(x3), int(y3)),
-                         (int(x4), int(y4)), (0, 255, 0), 2)
-                cv2.line(frame, (int(x4), int(y4)),
-                         (int(x1), int(y1)), (0, 255, 0), 2)
+                x1 = res["box"]["x1"]
+                y1 = res["box"]["y1"]
+                x2 = res["box"]["x2"]
+                y2 = res["box"]["y2"]
+                x3 = res["box"]["x3"]
+                y3 = res["box"]["y3"]
+                x4 = res["box"]["x4"]
+                y4 = res["box"]["y4"]
+                cv2.line(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 2)
+                cv2.line(frame, (int(x2), int(y2)), (int(x3), int(y3)), (0, 255, 0), 2)
+                cv2.line(frame, (int(x3), int(y3)), (int(x4), int(y4)), (0, 255, 0), 2)
+                cv2.line(frame, (int(x4), int(y4)), (int(x1), int(y1)), (0, 255, 0), 2)
                 for zone in zones:
                     if zone:
-                        if (zone[0][0] < x1 < zone[0][0] + zone[0][2] and
-                                zone[0][1] < y1 < zone[0][1] + zone[0][3]):
-                            cv2.putText(frame, "Alert", (0, 50),
-                                        cv2.FONT_HERSHEY_SIMPLEX, 2,
-                                        (0, 0, 255), 2)
+                        if (
+                            zone[0][0] < x1 < zone[0][0] + zone[0][2]
+                            and zone[0][1] < y1 < zone[0][1] + zone[0][3]
+                        ):
+                            cv2.putText(
+                                frame,
+                                "Alert",
+                                (0, 50),
+                                cv2.FONT_HERSHEY_SIMPLEX,
+                                2,
+                                (0, 0, 255),
+                                2,
+                            )
 
             for zone in zones:
                 if zone:
-                    cv2.rectangle(frame,
-                                  (zone[0][0], zone[0][1]),
-                                  (zone[0][0] + zone[0][2],
-                                   zone[0][1] + zone[0][3]),
-                                  (255, 0, 0), 2)
+                    cv2.rectangle(
+                        frame,
+                        (zone[0][0], zone[0][1]),
+                        (zone[0][0] + zone[0][2], zone[0][1] + zone[0][3]),
+                        (255, 0, 0),
+                        2,
+                    )
 
             cv2.imshow("frame", frame)
 
