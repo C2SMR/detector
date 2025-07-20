@@ -38,7 +38,6 @@ class Alert:
         self.zone = Zone(self.city, self.api)
         self.alert_cache = []
         self.cache_size = cache_size
-        self.run()
 
     def add_to_cache(self, alert_type: int, alert_message: str) -> None:
         self.alert_cache.append((alert_type, alert_message))

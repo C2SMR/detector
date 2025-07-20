@@ -10,3 +10,5 @@ src/*.pt
 .idea
 
 *__pycache__*
+
+train/wandb

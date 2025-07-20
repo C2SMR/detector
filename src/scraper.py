@@ -1,4 +1,7 @@
+import os
+
 import cv2
+from datetime import datetime
 
 
 class Scraper:
@@ -19,13 +22,26 @@ class Scraper:
         self.password = password
         self.folder_picture = "picture/"
         self.run_blur = run_blur
+        self.debug = os.getenv("DEBUG", "False") == "true"
 
-    def get_picture(self, frame):
-        cv2.imwrite(f"{self.folder_picture}/{self.city}.png", frame)
+    def save_picture(self, frame, save: bool = True) -> None:
+        if not save:
+            cv2.imwrite(f"{self.folder_picture}/{self.city}.png", frame)
+        else:
+            now = datetime.now()
+            if not os.path.exists(f"{self.folder_picture}/{self.city}"):
+                os.makedirs(f"{self.folder_picture}/{self.city}")
+            cv2.imwrite(
+                f"{self.folder_picture}/{self.city}/{now.strftime('%Y-%m-%d_%H-%M-%S')}.png",
+                frame,
+            )
+            if self.debug:
+                print(f"Picture saved in {self.folder_picture} folder for {self.city}")
         if self.run_blur:
             self.apply_blur_on_picture()
         else:
-            print("blur enable")
+            if self.debug:
+                print("blur disabled, not apply")
 
     def apply_blur_on_picture(self):
         img = cv2.imread(f"{self.folder_picture}/{self.city}.png")

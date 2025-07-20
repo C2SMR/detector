@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import requests
 import base64
 from weather import Weather
@@ -89,6 +91,17 @@ class API:
             files={"file": open(path_file, "rb")},
         )
 
+    def post_data_by_zone(self, zone_id: int, counting_data: int):
+        requests.post(
+            self.url + "/post_measuring_data",
+            json={
+                "key": self.RASPBERRY_KEY,
+                "zone_id": zone_id,
+                "counting_data": counting_data,
+                "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            },
+        )
+
     def get_picture(self):
         picture_base_64 = requests.post(
             "https://api.c2smr.fr/" "client/get_picture",
@@ -124,4 +137,10 @@ class API:
     def get_zone_green(self):
         response = requests.get(f"{self.url}/zone_green", params={"city": self.city})
         response.raise_for_status()
+        return response.json().get("data", [])
+
+    def get_all_zone(self):
+        response = requests.get(f"{self.url}/zone", params={"city": self.city})
+        response.raise_for_status()
+        print(response.json())
         return response.json().get("data", [])
