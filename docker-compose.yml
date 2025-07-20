@@ -9,20 +9,6 @@ services:
     environment:
       ROBOFLOW_VERSION: ${ROBOFLOW_VERSION}
       RASPBERRY_KEY: ${RASPBERRY_KEY}
-      MYSQL_HOST: ${MYSQL_HOST}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_PORT: ${MYSQL_PORT}
       DETECOTR_ID: ${DETECTOR_ID}
-      DRY: ${DRY}
     volumes:
       - ./src/picture:/app/picture
-      - ./api:/python-docker
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 512M
-        reservations:
-          cpus: '0.25'
-          memory: 256M
