@@ -1,3 +1,4 @@
+import os
 import time
 import sys
 import mysql.connector
@@ -53,16 +54,26 @@ class Main:
     api_key: str
     launch_detection: str | None
     stop_detection: str | None
+    type_detection = None
+    public_url: str | None
+    save_picture: bool
 
     def __init__(self):
         self.api_key = sys.argv[2]
         self.actual_data_predict_picture = None
         self.one_hour = 60 * 60
         self.time_for_one_hour = time.time()
-        self.detector_id = int(sys.argv[7])
-        self.dry_mode = int(sys.argv[8])
+        self.detector_id = int(sys.argv[3])
+        self.dry_mode = int(os.getenv("DRY_MODE", "0"))
+        self.time_to_sleep = int(os.getenv("TIME_TO_SLEEP", "10"))
+        self.api = API("", self.api_key, 0, 0)
         self.CITY = City(self.api, self.detector_id).return_city()
-        self.model = YOLO("weight.pt")
+        self.model = (
+            YOLO("weight.pt")
+            if not os.getenv("DISABLE_YOLO", "FALSE") == "true"
+            else None
+        )
+        self.debug = True if os.getenv("DEBUG", "FALSE") == "true" else False
         self.run()
 
     def verif_time_one_hour(self) -> bool:
@@ -90,33 +101,35 @@ class Main:
                           de l'image pour {self.city}: {e}"
                     )
 
-        if not valid_results:
-            print(f"Aucune détection valide pour l'image de {self.city}.")
-            self.actual_data_predict_picture = None
-
     def set_value_for_city(self, index):
+        if self.debug:
+            print(self.CITY[index])
         self.city = self.CITY[index][0]
         self.latitude = self.CITY[index][1]
         self.longitude = self.CITY[index][2]
         self.ip = self.CITY[index][3]
         self.user_name = self.CITY[index][4]
         self.password = self.CITY[index][5]
-        self.run_detection = self.CITY[index][7]
         self.run_blur = self.CITY[index][6]
-        self.launch_detection = self.CITY[index][8]
-        self.stop_detection = self.CITY[index][9]
-        self.cache_size = (
-            self.CITY[index][10] if self.CITY[index][10] is not None else 4
-        )
+        self.run_detection = self.CITY[index][7]
+        self.type_detection = self.CITY[index][8]
+        self.launch_detection = self.CITY[index][9]
+        self.stop_detection = self.CITY[index][10]
+        self.public_url = self.CITY[index][11]
+        self.save_picture = True if self.CITY[index][12] == 1 else False
 
     def run(self):
         caps = []
         for city in self.CITY:
             if city[8] is not None:
                 rtsp_url = city[8]
-            else:
+            elif city[11] is None:
                 rtsp_url = f"rtsp://admin:{city[5]}@{city[3]}/h264Preview_01_sub"
+            else:
+                rtsp_url = city[11]
 
+            if self.debug:
+                print(f"Connecting to camera: {city[0]} at {rtsp_url}")
             cap = cv2.VideoCapture(rtsp_url)
             if not cap.isOpened():
                 print(f"Erreur: {city[0]}.")
@@ -130,13 +143,9 @@ class Main:
         while True:
             frames = []
             for cap, city_name in caps:
-                cap.set(cv2.CAP_PROP_POS_MSEC, 1000)
                 ret, frame = cap.read()
                 if not ret:
-                    print(
-                        f"Erreur: Impossible de lire \
-                           la caméra a {city_name}."
-                    )
+                    print(f"Erreur: Impossible de lire la caméra a {city_name}.")
                     continue
                 frames.append((frame, city_name))
 
@@ -145,83 +154,100 @@ class Main:
                 self.set_value_for_city(i)
 
                 if self.run_detection:
-                    if self.launch_detection is not None:
-                        actual_hour = datetime.now().hour
-
-                        if actual_hour < int(
-                            self.launch_detection
-                        ) or actual_hour > int(self.stop_detection):
-                            print(f"City: {self.city} pass")
-                            continue
                     self.api = API(
                         self.city, self.api_key, self.latitude, self.longitude
                     )
 
                     for frame, city_name in frames:
                         if city_name == self.city:
-                            print(f"Processing frame for city: {self.city}")
+                            if self.debug:
+                                print(f"Processing frame for city: {self.city}")
 
-                            (
-                                Scraper(
-                                    self.city,
-                                    self.ip,
-                                    self.user_name,
-                                    self.password,
-                                    self.run_blur,
-                                ).get_picture(frame)
-                            )
-
-                            self.predict_picture(frame)
-
-                            self.detector = Detector(self.actual_data_predict_picture)
-
-                            self.api.set_number_people(
-                                self.detector.get_nb_beach(), self.detector.get_nb_sea()
-                            )
-
-                            cache_size = City(
-                                self.api, self.detector_id
-                            ).get_cache_size()
-                            self.alert = Alert(
-                                self.latitude,
-                                self.longitude,
-                                self.actual_data_predict_picture,
-                                self.api,
+                            Scraper(
                                 self.city,
-                                cache_size,
-                            )
+                                self.ip,
+                                self.user_name,
+                                self.password,
+                                self.run_blur,
+                            ).save_picture(frame, self.save_picture)
 
-                            self.alert.run()
-
-                            if self.verif_time_one_hour():
-                                for j in range(len(self.CITY)):
-                                    self.set_value_for_city(j)
+                            lines_data = self.api.get_all_zone()
+                            result_by_line = []
+                            for line in lines_data:
+                                if self.debug:
                                     print(
-                                        f"Updating API data for city:\
-                                           {self.city}"
+                                        f"Processing line: {line} for city: {self.city}"
                                     )
-                                    self.api = API(
-                                        self.city,
-                                        self.api_key,
-                                        self.latitude,
-                                        self.longitude,
+                                if line[5] == "opencv":
+                                    result_by_line.append(
+                                        [
+                                            line[0],
+                                            Detector.predict_nb_swimmer_by_zone_with_opencv(
+                                                frame,
+                                                x1=line[1],
+                                                x2=line[2],
+                                                y1=line[3],
+                                                y2=line[4],
+                                                filter_size=line[7],
+                                                threshold_luminosity=line[8],
+                                                stop_threshold_luminosity=line[9],
+                                            ),
+                                        ]
                                     )
-                                    self.api.add_data_city(
+                                elif line[5] == "yolo":
+                                    result_by_line.append(
+                                        [
+                                            line[0],
+                                            Detector.predict_nb_swimmer_by_zone_with_yolo(
+                                                frame,
+                                                x1=line[1],
+                                                x2=line[2],
+                                                y1=line[3],
+                                                y2=line[4],
+                                            ),
+                                        ]
+                                    )
+                                elif line[5] == "yolo-alert":
+                                    self.predict_picture(frame)
+                                    self.detector = Detector(
+                                        self.actual_data_predict_picture
+                                    )
+                                    self.api.set_number_people(
                                         self.detector.get_nb_beach(),
                                         self.detector.get_nb_sea(),
-                                        self.detector.get_visibility(),
                                     )
-                                self.set_value_for_city(i)
-                            self.api.add_picture_alert_or_moment(
-                                FOLDER_PICTURE + self.city + ".png"
-                            )
+                                    cache_size = City(
+                                        self.api, self.detector_id
+                                    ).get_cache_size()
+                                    self.alert = Alert(
+                                        self.latitude,
+                                        self.longitude,
+                                        self.actual_data_predict_picture,
+                                        self.api,
+                                        self.city,
+                                        cache_size,
+                                    )
+                                    self.alert.run()
+                                else:
+                                    print(f"Unknown detection method: {line[5]}")
+
+                            for zone_id, data in result_by_line:
+                                if self.debug:
+                                    print(f"Zone ID: {zone_id}, Data: {data}")
+                                self.api.post_data_by_zone(zone_id, data)
+
+                            if os.getenv("SEND_PICTURE", "FALSE") == "true":
+                                self.api.add_picture_alert_or_moment(
+                                    FOLDER_PICTURE + self.city + ".png"
+                                )
                             print(
                                 f"City: {self.city} has run in :\
                                    {time.time() - self.time_start}"
                             )
 
                 else:
-                    print(f"City: {self.city} pass")
+                    if self.debug:
+                        print(f"Skipping detection for city: {self.city}")
 
             if self.dry_mode == 1:
                 if frame is not None:
@@ -231,6 +257,8 @@ class Main:
 
                 if cv2.waitKey(1) & 0xFF == ord("a"):
                     break
+
+            time.sleep(self.time_to_sleep)
 
         for cap, _ in caps:
             cap.release()
