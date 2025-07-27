@@ -111,23 +111,6 @@ class Detector:
                     and y1 * height_picture < y < y2 * height_picture
                 ):
                     nb_detection += 1
-        # Draw rectangles around detected swimmers
-        for result in results:
-            if result.boxes is None:
-                continue
-            for box in result.boxes:
-                x, y, w, h = box.xywh[0]
-                if (
-                    x1 * width_picture < x < x2 * width_picture
-                    and y1 * height_picture < y < y2 * height_picture
-                ):
-                    cv2.rectangle(
-                        frame,
-                        (int(x - w / 2), int(y - h / 2)),
-                        (int(x + w / 2), int(y + h / 2)),
-                        (0, 255, 0),
-                        2,
-                    )
         cv2.rectangle(
             frame,
             (int(x1 * width_picture), int(y1 * height_picture)),
