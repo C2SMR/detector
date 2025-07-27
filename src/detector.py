@@ -94,12 +94,29 @@ class Detector:
 
     @staticmethod
     def predict_nb_swimmer_by_zone_with_yolo(frame, x1, x2, y1, y2) -> int:
+        x1, x2, y1, y2 = x1 / 10, x2 / 10, y1 / 10, y2 / 10
+        width_picture = frame.shape[1]
+        height_picture = frame.shape[0]
         model = YOLO("best.pt")
         results = model.predict(source=frame, save=False)
         nb_detection = 0
+        print(results)
         for result in results:
+            if result.boxes is None:
+                continue
             for box in result.boxes:
                 x, y, w, h = box.xywh[0]
-                if x1 < x < x2 and y1 < y < y2:
+                if (
+                    x1 * width_picture < x < x2 * width_picture
+                    and y1 * height_picture < y < y2 * height_picture
+                ):
                     nb_detection += 1
+        cv2.rectangle(
+            frame,
+            (int(x1 * width_picture), int(y1 * height_picture)),
+            (int(x2 * width_picture), int(y2 * height_picture)),
+            (255, 0, 0),
+            2,
+        )
+        cv2.imwrite(f"debu{x1}_{x2}_{y1}_{y2}.png", frame)
         return nb_detection

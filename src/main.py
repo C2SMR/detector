@@ -69,7 +69,7 @@ class Main:
         self.api = API("", self.api_key, 0, 0)
         self.CITY = City(self.api, self.detector_id).return_city()
         self.model = (
-            YOLO("weight.pt")
+            YOLO("best.pt")
             if not os.getenv("DISABLE_YOLO", "FALSE") == "true"
             else None
         )
